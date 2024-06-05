@@ -24,7 +24,14 @@ class EF_LSTM(nn.Module):
         output_dim = args.num_classes if args.train_mode == "classification" else 1
 
         self.norm = nn.BatchNorm1d(input_len)
-        self.lstm = nn.LSTM(in_size, hidden_size, num_layers=num_layers, dropout=dropout, bidirectional=False, batch_first=True)
+        self.lstm = nn.LSTM(
+            in_size, 
+            hidden_size, 
+            num_layers=num_layers, 
+            dropout=dropout, 
+            bidirectional=False, 
+            batch_first=True
+        )
         self.dropout = nn.Dropout(dropout)
         self.linear = nn.Linear(hidden_size, hidden_size)
         self.out = nn.Linear(hidden_size, output_dim)

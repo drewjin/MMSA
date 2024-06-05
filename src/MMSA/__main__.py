@@ -1,6 +1,14 @@
+import os 
+import sys
+from os.path import join
+workplace_root = join(os.path.abspath(os.path.join(os.path.dirname(__file__)))[:-2])
+src_root = join(workplace_root, 'src', 'MMSA')
+sys.path.append(workplace_root)
+sys.path.append(src_root)
+
 import argparse
 
-from .run import MMSA_run
+from MMSA.run import MMSA_run
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -10,23 +18,23 @@ def parse_args():
                                  'misa', 'mfm', 'mlf_dnn', 'mtfn', 'mlmf', 'self_mm', 'mmim','tfr_net','tetfn','cenet'])
     parser.add_argument('-d', '--dataset', type=str, default='sims',
                         choices=['sims', 'mosi', 'mosei', 'simsv2'], help='Name of dataset')
-    parser.add_argument('-c', '--config', type=str, default='',
+    parser.add_argument('-c', '--config', type=str, default=join(workplace_root, 'config', 'config_regression.json'),
                         help='Path to config file. If not specified, default config file will be used.')
     parser.add_argument('-t', '--tune', action='store_true',
                         help='Whether to tune hyper parameters. Default: False')
     parser.add_argument('-tt', '--tune-times', type=int, default=50,
                         help='Number of times to tune hyper parameters. Default: 50')
-    parser.add_argument('-s', '--seeds', action='append', type=int, default=[],
+    parser.add_argument('-s', '--seeds', action='append', type=int, default=[114514],
                         help='Random seeds. Specify multiple times for multiple seeds. Default: [1111, 1112, 1113, 1114, 1115]')
     parser.add_argument('-n', '--num-workers', type=int, default=8,
                         help='Number of workers used to load data. Default: 4')
     parser.add_argument('-v', '--verbose', type=int, default=1,
                         help='Verbose level of stdout. 0 for error, 1 for info, 2 for debug. Default: 1')
-    parser.add_argument('--model-save-dir', type=str, default='',
+    parser.add_argument('--model-save-dir', type=str, default=join(workplace_root, 'saved_models'),
                         help='Path to save trained models. Default: "~/MMSA/saved_models"')
-    parser.add_argument('--res-save-dir', type=str, default='',
+    parser.add_argument('--res-save-dir', type=str, default=join(workplace_root, 'results'),
                         help='Path to save csv results. Default: "~/MMSA/results"')
-    parser.add_argument('--log-dir', type=str, default='',
+    parser.add_argument('--log-dir', type=str, default=join(workplace_root, 'logs'),
                         help='Path to save log files. Default: "~/MMSA/logs"')
     parser.add_argument('-g', '--gpu-ids', action='append', default=[],
                         help='Specify which gpus to use. If an empty list is supplied, will automatically assign to the most memory-free gpu. \

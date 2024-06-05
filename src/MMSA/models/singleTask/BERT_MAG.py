@@ -226,9 +226,8 @@ class MAG_BertModel(BertPreTrainedModel):
         sequence_output = encoder_outputs[0]
         pooled_output = self.pooler(sequence_output)
 
-        outputs = (sequence_output, pooled_output,) + encoder_outputs[
-            1:
-        ]  # add hidden_states and attentions if they are here
+        outputs = (sequence_output, pooled_output,) + encoder_outputs[1:]  
+        # add hidden_states and attentions if they are here
         # sequence_output, pooled_output, (hidden_states), (attentions)
         return outputs
 
