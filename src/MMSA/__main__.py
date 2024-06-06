@@ -30,11 +30,11 @@ def parse_args():
                         help='Number of workers used to load data. Default: 4')
     parser.add_argument('-v', '--verbose', type=int, default=1,
                         help='Verbose level of stdout. 0 for error, 1 for info, 2 for debug. Default: 1')
-    parser.add_argument('--model-save-dir', type=str, default=join(workplace_root, 'saved_models'),
+    parser.add_argument('--model-save-dir', type=str, default='saved_models',
                         help='Path to save trained models. Default: "~/MMSA/saved_models"')
-    parser.add_argument('--res-save-dir', type=str, default=join(workplace_root, 'results'),
+    parser.add_argument('--res-save-dir', type=str, default='results',
                         help='Path to save csv results. Default: "~/MMSA/results"')
-    parser.add_argument('--log-dir', type=str, default=join(workplace_root, 'logs'),
+    parser.add_argument('--log-dir', type=str, default='logs',
                         help='Path to save log files. Default: "~/MMSA/logs"')
     parser.add_argument('-g', '--gpu-ids', action='append', default=[],
                         help='Specify which gpus to use. If an empty list is supplied, will automatically assign to the most memory-free gpu. \

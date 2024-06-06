@@ -2,7 +2,7 @@
   "datasetCommonParams": {
     "dataset_root_dir": "D:\\DeepLearning\\MMSA\\datasets",
     "mosi": {
-      "aligned": { 
+      "aligned": {
         "featurePath": "CMU-MOSI\\Processed\\aligned_50.pkl",
         "seq_lens": [50, 50, 50],
         "feature_dims": [768, 5, 20],
