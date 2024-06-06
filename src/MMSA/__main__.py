@@ -1,7 +1,7 @@
 import os 
 import sys
 from os.path import join
-workplace_root = join(os.path.abspath(os.path.join(os.path.dirname(__file__)))[:-2])
+workplace_root = join(*os.path.abspath(os.path.join(os.path.dirname(__file__))).split(os.sep)[:-2])
 src_root = join(workplace_root, 'src', 'MMSA')
 sys.path.append(workplace_root)
 sys.path.append(src_root)
@@ -16,9 +16,9 @@ def parse_args():
     parser.add_argument('-m', '--model', type=str, default='lf_dnn', help='Name of model',
                         choices=['lf_dnn', 'ef_lstm', 'tfn', 'mctn','lmf', 'mfn', 'graph_mfn', 'mult', 'bert_mag', 
                                  'misa', 'mfm', 'mlf_dnn', 'mtfn', 'mlmf', 'self_mm', 'mmim','tfr_net','tetfn','cenet'])
-    parser.add_argument('-d', '--dataset', type=str, default='sims',
+    parser.add_argument('-d', '--dataset', type=str, default='mosi',
                         choices=['sims', 'mosi', 'mosei', 'simsv2'], help='Name of dataset')
-    parser.add_argument('-c', '--config', type=str, default=join(workplace_root, 'config', 'config_regression.json'),
+    parser.add_argument('-c', '--config', type=str, default=None,
                         help='Path to config file. If not specified, default config file will be used.')
     parser.add_argument('-t', '--tune', action='store_true',
                         help='Whether to tune hyper parameters. Default: False')

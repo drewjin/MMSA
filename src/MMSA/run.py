@@ -205,7 +205,10 @@ def MMSA_run(
         # torch.cuda.set_device() encouraged by pytorch developer, although dicouraged in the doc.
         # https://github.com/pytorch/pytorch/issues/70404#issuecomment-1001113109
         # It solves the bug of RNN always running on gpu 0.
-        torch.cuda.set_device(args['device'])
+        if args['device'].type == 'cpu': # if cpu
+            torch.set_default_device(args['device'])
+        else:
+            torch.cuda.set_device(args['device'])
 
         logger.info("Running with args:")
         logger.info(args)
