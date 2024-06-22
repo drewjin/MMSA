@@ -34,7 +34,7 @@ class LMF(nn.Module):
         self.text_in, self.audio_in, self.video_in = args.feature_dims
         self.text_hidden, self.audio_hidden, self.video_hidden = args.hidden_dims
 
-        self.text_out= self.text_hidden // 2
+        self.text_out = self.text_hidden // 2
         self.output_dim = args.num_classes if args.train_mode == "classification" else 1
         self.rank = args.rank
 

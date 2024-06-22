@@ -84,7 +84,7 @@ class AlignSubNet(nn.Module):
             else:
                 pad_len = self.dst_len - raw_seq_len % self.dst_len
                 pool_size = raw_seq_len // self.dst_len + 1
-            pad_x = x[:, -1, :].unsqueeze(1).expand([x.size(0), pad_len, x.size(-1)])
+            pad_x = x[:, -1, :].unsqueeze(1).expand([x.size(0), pad_len, x.size(-1)]) # using the last frame to pad
             x = torch.cat([x, pad_x], dim=1).view(x.size(0), self.dst_len, pool_size, -1)
             x = x.mean(dim=2)
             return x

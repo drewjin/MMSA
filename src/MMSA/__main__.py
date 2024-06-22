@@ -13,7 +13,7 @@ from MMSA.run import MMSA_run
 def parse_args():
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('-m', '--model', type=str, default='lf_dnn', help='Name of model',
+    parser.add_argument('-m', '--model', type=str, default='graph_mfn', help='Name of model',
                         choices=['lf_dnn', 'ef_lstm', 'tfn', 'mctn','lmf', 'mfn', 'graph_mfn', 'mult', 'bert_mag', 
                                  'misa', 'mfm', 'mlf_dnn', 'mtfn', 'mlmf', 'self_mm', 'mmim','tfr_net','tetfn','cenet'])
     parser.add_argument('-d', '--dataset', type=str, default='mosi',
@@ -36,7 +36,7 @@ def parse_args():
                         help='Path to save csv results. Default: "~/MMSA/results"')
     parser.add_argument('--log-dir', type=str, default='logs',
                         help='Path to save log files. Default: "~/MMSA/logs"')
-    parser.add_argument('-g', '--gpu-ids', action='append', default=[],
+    parser.add_argument('-g', '--gpu-ids', action='append', default=[0],
                         help='Specify which gpus to use. If an empty list is supplied, will automatically assign to the most memory-free gpu. \
                               Currently only support single gpu. Default: []')
     parser.add_argument('-Ft', '--feature-T', type=str, default='',

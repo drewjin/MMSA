@@ -31,6 +31,7 @@ class MFN():
         # loop util earlystop
         while True: 
             epochs += 1
+            logger.info(f'[Epoch {epochs}]')
             # train
             y_pred, y_true = [], []
             losses = []
@@ -88,6 +89,7 @@ class MFN():
             # early stop
             if epochs - best_epoch >= self.args.early_stop:
                 return epoch_results if return_epoch_results else None
+            
 
     def do_test(self, model, dataloader, mode="VAL", return_sample_results=False):
         model.eval()

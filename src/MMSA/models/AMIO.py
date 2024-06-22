@@ -38,7 +38,7 @@ class AMIO(nn.Module):
         }
         self.need_model_aligned = args.get('need_model_aligned', None)
         # simulating word-align network (for seq_len_T == seq_len_A == seq_len_V)
-        if(self.need_model_aligned):
+        if self.need_model_aligned:
             self.alignNet = AlignSubNet(args, 'avg_pool')
             if 'seq_lens' in args.keys():
                 args['seq_lens'] = self.alignNet.get_seq_len()

@@ -95,21 +95,21 @@ class DynamicFusionGraph(nn.Module):
     def fusion(self, in_modalities):
 
         outputs = {}
-        for modality, index in zip(in_modalities, range(len(in_modalities))):
+        for index, modality in enumerate(in_modalities):
             outputs[tuple([index])] = modality
         efficacies = self.efficacy_model(torch.cat([x for x in in_modalities], dim=1))
         efficacy_index = 0
         for key in self.powerset[self.num_modalities:]:
             small_power_set = list(chain.from_iterable(combinations(key, r) for r in range(len(key) + 1)))[1:-1]
-            this_input = torch.cat([outputs[x] * efficacies[:, efficacy_index + y].view(-1, 1) for x, y in
-                                    zip(small_power_set, range(len(small_power_set)))], dim=1)
+            this_input = torch.cat([outputs[key] * efficacies[:, efficacy_index + idx].view(-1, 1) 
+                                    for idx, key in enumerate(small_power_set)], dim=1)
             
             outputs[key] = self.networks[key](this_input)
             efficacy_index += len(small_power_set)
 
         small_power_set.append(tuple(range(self.num_modalities)))
-        t_input = torch.cat([outputs[x] * efficacies[:, efficacy_index + y].view(-1, 1) for x, y in
-                                zip(small_power_set, range(len(small_power_set)))], dim=1)
+        t_input = torch.cat([outputs[key] * efficacies[:, efficacy_index + idx].view(-1, 1) 
+                             for idx, key in enumerate(small_power_set)], dim=1)
         t_output = self.t_network(t_input)
         return t_output, outputs, efficacies
 

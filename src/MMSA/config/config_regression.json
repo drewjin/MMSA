@@ -1,6 +1,6 @@
 {
   "datasetCommonParams": {
-    "dataset_root_dir": "D:\\DeepLearning\\MMSA\\datasets",
+    "dataset_root_dir": "E:\\DeepLearning\\MMSA\\datasets",
     "mosi": {
       "aligned": {
         "featurePath": "CMU-MOSI\\Processed\\aligned_50.pkl",
@@ -168,7 +168,7 @@
     "commonParams": {
       "need_data_aligned": true,
       "need_model_aligned": true,
-      "need_normalized": true,
+      "need_normalized": false,
       "early_stop": 8
     },
     "datasetParams": {

@@ -65,9 +65,9 @@ class MFN(nn.Module):
         text_x = text_x.permute(1,0,2)
         audio_x = audio_x.permute(1,0,2)
         video_x = video_x.permute(1,0,2)
-        # x is t x n x d
+        # x is T x n x d
         n = text_x.size()[1]
-        t = text_x.size()[0]
+        T = text_x.size()[0]
         self.h_l = torch.zeros(n, self.dh_l).to(text_x.device)
         self.h_a = torch.zeros(n, self.dh_a).to(text_x.device)
         self.h_v = torch.zeros(n, self.dh_v).to(text_x.device)
@@ -82,26 +82,26 @@ class MFN(nn.Module):
         all_c_as = []
         all_c_vs = []
         all_mems = []
-        for i in range(t):
+        for t in range(T):
             # prev time step
             prev_c_l = self.c_l
             prev_c_a = self.c_a
             prev_c_v = self.c_v
             # curr time step
-            new_h_l, new_c_l = self.lstm_l(text_x[i], (self.h_l, self.c_l))
-            new_h_a, new_c_a = self.lstm_a(audio_x[i], (self.h_a, self.c_a))
-            new_h_v, new_c_v = self.lstm_v(video_x[i], (self.h_v, self.c_v))
+            new_h_l, new_c_l = self.lstm_l(text_x[t], (self.h_l, self.c_l))
+            new_h_a, new_c_a = self.lstm_a(audio_x[t], (self.h_a, self.c_a))
+            new_h_v, new_c_v = self.lstm_v(video_x[t], (self.h_v, self.c_v))
             # concatenate
-            prev_cs = torch.cat([prev_c_l,prev_c_a,prev_c_v], dim=1)
-            new_cs = torch.cat([new_c_l,new_c_a,new_c_v], dim=1)
-            cStar = torch.cat([prev_cs,new_cs], dim=1)
+            prev_cs = torch.cat([prev_c_l, prev_c_a, prev_c_v], dim=1)
+            new_cs = torch.cat([new_c_l, new_c_a, new_c_v], dim=1)
+            cStar = torch.cat([prev_cs, new_cs], dim=1)
             attention = F.softmax(self.att1_fc2(self.att1_dropout(F.relu(self.att1_fc1(cStar)))),dim=1)
-            attended = attention*cStar
-            cHat = torch.tanh(self.att2_fc2(self.att2_dropout(F.relu(self.att2_fc1(attended)))))
-            both = torch.cat([attended,self.mem], dim=1)
+            attended = attention*cStar # hadamard product
+            cHat = self.att2_fc2(self.att2_dropout(F.relu(self.att2_fc1(attended))))
+            both = torch.cat([attended, self.mem], dim=1)
             gamma1 = torch.sigmoid(self.gamma1_fc2(self.gamma1_dropout(F.relu(self.gamma1_fc1(both)))))
             gamma2 = torch.sigmoid(self.gamma2_fc2(self.gamma2_dropout(F.relu(self.gamma2_fc1(both)))))
-            self.mem = gamma1*self.mem + gamma2*cHat
+            self.mem = gamma1*self.mem + gamma2*torch.tanh(cHat)
             all_mems.append(self.mem)
             # update
             self.h_l, self.c_l = new_h_l, new_c_l
@@ -119,7 +119,7 @@ class MFN(nn.Module):
         last_h_a = all_h_as[-1]
         last_h_v = all_h_vs[-1]
         last_mem = all_mems[-1]
-        last_hs = torch.cat([last_h_l,last_h_a,last_h_v,last_mem], dim=1)
+        last_hs = torch.cat([last_h_l, last_h_a, last_h_v, last_mem], dim=1)
         output = self.out_fc2(self.out_dropout(F.relu(self.out_fc1(last_hs))))
         res = {
             'M': output,

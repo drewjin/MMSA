@@ -162,7 +162,7 @@ class MMDataset(Dataset):
         self.text = do_truncate(self.text, text_length)
         self.audio = do_truncate(self.audio, audio_length)
 
-    def __normalize(self):
+    def __normalize(self): # TODO: why mfn utilizes this function?
         # (num_examples,max_len,feature_dim) -> (max_len, num_examples, feature_dim)
         self.vision = np.transpose(self.vision, (1, 0, 2))
         self.audio = np.transpose(self.audio, (1, 0, 2))
@@ -200,7 +200,7 @@ class MMDataset(Dataset):
             'index': index,
             'id': self.ids[index],
             'labels': {k: torch.Tensor(v[index].reshape(-1)) for k, v in self.labels.items()}
-        } 
+        }
         if not self.args['need_data_aligned']:
             sample['audio_lengths'] = self.audio_lengths[index]
             sample['vision_lengths'] = self.vision_lengths[index]
