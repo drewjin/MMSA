@@ -90,19 +90,21 @@ class MFM(nn.Module):
         self.dh_l,self.dh_a,self.dh_v = args.hidden_dims
         self.args = args
         total_h_dim = self.dh_l+self.dh_a+self.dh_v
-        zy_size = args.zy_size
-        zl_size = args.zl_size
-        za_size = args.za_size
-        zv_size = args.zv_size
-        fy_size = args.fy_size
-        fl_size = args.fl_size
-        fa_size = args.fa_size
-        fv_size = args.fv_size
-        zy_to_fy_dropout = args.zy_to_fy_dropout
+        zy_size = args.zy_size  # Multi-modal data fusion latent variable size
+        zl_size = args.zl_size  # Single-modal Text data latent variable size
+        za_size = args.za_size  # Single-modal Aucoustic data latent variable size
+        zv_size = args.zv_size  # Single-modal Vision data latent variable size
+        fy_size = args.fy_size  # Multi-modal data fusion discriminative factor size
+        fl_size = args.fl_size  # Single-modal Text data discriminative factor size
+        fa_size = args.fa_size  # Single-modal Aucoustic data discriminative factor size
+        fv_size = args.fv_size  # Single-modal Vision data discriminative factor size
+        zy_to_fy_dropout = args.zy_to_fy_dropout    
         zl_to_fl_dropout = args.zl_to_fl_dropout
         za_to_fa_dropout = args.za_to_fa_dropout
         zv_to_fv_dropout = args.zv_to_fv_dropout
         fy_to_y_dropout = args.fy_to_y_dropout
+        
+        # MFN params, most of which are not used
         self.mem_dim = args.memsize
         window_dim = args.windowsize
         output_dim = args.num_classes if args.train_mode == "classification" else 1
@@ -169,7 +171,7 @@ class MFM(nn.Module):
         za = self.encoder_a.forward(x_a, self.args)
         zv = self.encoder_v.forward(x_v, self.args)
 
-        mfn_last = self.mfn_encoder.forward(text_x, audio_x, video_x)['L']
+        mfn_last = self.mfn_encoder.forward(text_x, audio_x, video_x)['L']  # mfn_res = {'M': output, 'L': last_hs}
         zy = self.last_to_zy_fc1(mfn_last)
         mmd_loss = loss_MMD(zl, self.args)+loss_MMD(za, self.args)+loss_MMD(zv, self.args)+loss_MMD(zy, self.args)
         missing_loss = 0.0
