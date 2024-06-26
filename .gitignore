@@ -13,3 +13,5 @@ result
 results
 datasets
 saved_models
+.DS_Store
+__MACOSX__s
