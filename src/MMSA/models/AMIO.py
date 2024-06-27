@@ -45,8 +45,8 @@ class AMIO(nn.Module):
         lastModel = self.MODEL_MAP[args['model_name']]
 
         if args.model_name == 'cenet':
-            config = BertConfig.from_pretrained(args.pretrained, num_labels=1, finetuning_task='sst')
-            self.Model = CENET.from_pretrained(args.pretrained, config=config, pos_tag_embedding=True, senti_embedding=True, polarity_embedding=True, args=args)
+            config = BertConfig.from_pretrained(args.weight_dir, num_labels=1, finetuning_task='sst')
+            self.Model = CENET.from_pretrained(args.weight_dir, config=config, pos_tag_embedding=True, senti_embedding=True, polarity_embedding=True, args=args)
         else:
             self.Model = lastModel(args)
 

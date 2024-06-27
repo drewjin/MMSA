@@ -222,6 +222,7 @@ def MMSA_run(
             logger.info(f"{'-'*30} Running with seed {seed} [{i + 1}/{len(seeds)}] {'-'*30}")
             # actual running
             result = _run(args, num_workers, is_tune)
+            result = {k: float(v) for k, v in result.items()}
             logger.info(f"Result for seed {seed}: {result}")
             model_results.append(result)
         criterions = list(model_results[0].keys())

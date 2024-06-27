@@ -321,11 +321,7 @@ class MAG_BertForSequenceClassification(BertPreTrainedModel):
 class BERT_MAG(nn.Module):
     def __init__(self, args):
         super(BERT_MAG, self).__init__()
-        if args.language == 'cn':
-            self.pretrainedBertPath = 'bert-base-chinese' 
-        else:
-            self.pretrainedBertPath = 'bert-base-uncased' 
-
+        self.pretrainedBertPath = args.weight_dir
         self.model = MAG_BertForSequenceClassification.from_pretrained(
             self.pretrainedBertPath, args=args, num_labels=1,
         )

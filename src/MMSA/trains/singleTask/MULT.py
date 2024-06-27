@@ -38,6 +38,9 @@ class MULT():
             model.train()
             train_loss = 0.0
             left_epochs = self.args.update_epochs
+            logger.info(
+                f">>>>> EPOCH[{epochs}] <<<<<"
+            )
             with tqdm(dataloader['train']) as td:
                 for batch_data in td:
                     if left_epochs == self.args.update_epochs:

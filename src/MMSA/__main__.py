@@ -13,7 +13,7 @@ from MMSA.run import MMSA_run
 def parse_args():
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('-m', '--model', type=str, default='mult', help='Name of model',
+    parser.add_argument('-m', '--model', type=str, default='bert_mag', help='Name of model',
                         choices=['lf_dnn', 'ef_lstm', 'tfn', 'mctn','lmf', 'mfn', 'graph_mfn', 'mult', 'bert_mag', 
                                  'misa', 'mfm', 'mlf_dnn', 'mtfn', 'mlmf', 'self_mm', 'mmim','tfr_net','tetfn','cenet'])
     parser.add_argument('-d', '--dataset', type=str, default='mosi',
@@ -24,7 +24,7 @@ def parse_args():
                         help='Whether to tune hyper parameters. Default: False')
     parser.add_argument('-tt', '--tune-times', type=int, default=50,
                         help='Number of times to tune hyper parameters. Default: 50')
-    parser.add_argument('-s', '--seeds', action='append', type=int, default=[3407],
+    parser.add_argument('-s', '--seeds', action='append', type=int, default=[16],
                         help='Random seeds. Specify multiple times for multiple seeds. Default: [1111, 1112, 1113, 1114, 1115]')
     parser.add_argument('-n', '--num-workers', type=int, default=8,
                         help='Number of workers used to load data. Default: 4')

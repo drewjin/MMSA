@@ -41,6 +41,26 @@ def get_config_regression(
     config['featurePath'] = os.path.join(config_all['datasetCommonParams']['dataset_root_dir'], config['featurePath'])
     config = edict(config) # use edict for backward compatibility with MMSA v1.0
 
+    pretrained_weight_root = config_all['pretrainedWeights']['weights_root_dir']
+    if config['transformers'] not in [None, [], '']:
+        config['weight_dir'] = os.path.join(pretrained_weight_root, config['transformers'], config['pretrained'])
+    else:
+        config['weight_dir'] = os.path.join(pretrained_weight_root, config['pretrained'])
+
+    weight_dir = config['weight_dir']
+    if config['transformers'] == 'bert':
+        weight_dir = weight_dir.split('/')
+        cn_bert = 'bert-base-chinese'
+        en_bert = 'bert-base-uncased'
+        if config['language']== 'cn' and weight_dir[-1] != cn_bert:
+            weight_dir[-1] = cn_bert
+            weight_dir = '/'.join(weight_dir)
+            config['weight_dir'] = weight_dir 
+        elif config['language'] == 'en' and weight_dir[-1] != en_bert:
+            weight_dir[-1] = en_bert
+            weight_dir = '/'.join(weight_dir)
+            config['weight_dir'] = weight_dir 
+
     return config
 
 

@@ -33,6 +33,9 @@ class LMF():
         # loop util earlystop
         while True: 
             epochs += 1
+            logger.info(
+                f">>>>> EPOCH[{epochs}] <<<<<"
+            )
             # train
             y_pred, y_true = [], []
             losses = []

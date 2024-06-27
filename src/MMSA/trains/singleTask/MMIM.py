@@ -177,6 +177,9 @@ class MMIM():
         best_valid = 1e8 if min_or_max == 'min' else 0
         while True: 
             epochs += 1
+            logger.info(
+                f">>>>> EPOCH[{epochs}] <<<<<"
+            )
             if self.args.contrast:
                 train_loss_mmilb = self.train_mmilb(dataloader)
             train_loss_main, pred, truth = self.train_others(dataloader)

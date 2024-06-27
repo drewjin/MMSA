@@ -35,6 +35,9 @@ class TFN():
             y_pred, y_true = [], []
             model.train()
             train_loss = 0.0
+            logger.info(
+                f">>>>> EPOCH[{epochs}] <<<<<"
+            )
             with tqdm(dataloader['train']) as td:
                 for batch_data in td:
                     vision = batch_data['vision'].to(self.args.device)

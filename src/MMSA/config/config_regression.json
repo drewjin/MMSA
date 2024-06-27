@@ -1,4 +1,7 @@
 {
+  "pretrainedWeights": {
+    "weights_root_dir": "/home/drew/Desktop/Research/weights"
+  },
   "datasetCommonParams": {
     "dataset_root_dir": "/home/drew/Desktop/Research/MMSA/datasets",
     "mosi": {

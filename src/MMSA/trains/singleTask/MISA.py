@@ -34,6 +34,9 @@ class MISA():
         best_valid = 1e8 if min_or_max == 'min' else 0
         while True: 
             epochs += 1
+            logger.info(
+                f">>>>> EPOCH[{epochs}] <<<<<"
+            )
             # train
             y_pred, y_true = [], []
             losses = []
