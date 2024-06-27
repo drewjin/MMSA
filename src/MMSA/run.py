@@ -237,7 +237,7 @@ def MMSA_run(
             values = [r[c] for r in model_results]
             mean = round(np.mean(values)*100, 2)
             std = round(np.std(values)*100, 2)
-            res.append((mean, std))
+            res.append((float(mean), float(std)))
         df.loc[len(df)] = res
         df.to_csv(csv_file, index=None)
         logger.info(f"Results saved to {csv_file}.")

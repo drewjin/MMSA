@@ -1,9 +1,9 @@
 {
   "datasetCommonParams": {
-    "dataset_root_dir": "E:\\DeepLearning\\MMSA\\datasets",
+    "dataset_root_dir": "/home/drew/Desktop/Research/MMSA/datasets",
     "mosi": {
       "aligned": {
-        "featurePath": "CMU-MOSI\\Processed\\aligned_50.pkl",
+        "featurePath": "CMU-MOSI/Processed/aligned_50.pkl",
         "seq_lens": [50, 50, 50],
         "feature_dims": [768, 5, 20],
         "train_samples": 1284,
@@ -14,7 +14,7 @@
         "missing_seed": [1111, 1111, 1111]
       },
       "unaligned": {
-        "featurePath": "CMU-MOSI\\Processed\\unaligned_50.pkl",
+        "featurePath": "CMU-MOSI/Processed/unaligned_50.pkl",
         "seq_lens": [50, 500, 375],
         "feature_dims": [768, 5, 20],
         "train_samples": 1284,
