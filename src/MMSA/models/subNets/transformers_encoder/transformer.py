@@ -36,15 +36,26 @@ class TransformerEncoder(nn.Module):
         
         self.attn_mask = attn_mask
 
-        self.layers = nn.ModuleList([])
-        for layer in range(layers):
-            new_layer = TransformerEncoderLayer(embed_dim,
-                                                num_heads=num_heads,
-                                                attn_dropout=attn_dropout,
-                                                relu_dropout=relu_dropout,
-                                                res_dropout=res_dropout,
-                                                attn_mask=attn_mask)
-            self.layers.append(new_layer)
+        # Ordinary Code
+        # self.layers = nn.ModuleList([])
+        # for _ in range(layers):
+        #     new_layer = TransformerEncoderLayer(embed_dim,
+        #                                         num_heads=num_heads,
+        #                                         attn_dropout=attn_dropout,
+        #                                         relu_dropout=relu_dropout,
+        #                                         res_dropout=res_dropout,
+        #                                         attn_mask=attn_mask)
+        #     self.layers.append(new_layer)
+
+        # Optimized Code
+        self.layers = nn.ModuleList(
+            [TransformerEncoderLayer(
+                embed_dim,
+                num_heads=num_heads,
+                attn_dropout=attn_dropout,
+                relu_dropout=relu_dropout,
+                res_dropout=res_dropout,
+                attn_mask=attn_mask)] * layers)
 
         self.register_buffer('version', torch.Tensor([2]))
         self.normalize = True
