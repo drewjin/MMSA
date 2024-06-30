@@ -16,3 +16,4 @@ saved_models
 .DS_Store
 __MACOSX__
 *.zip
+src/MMSA/config/config_regression.json
