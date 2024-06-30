@@ -13,7 +13,11 @@ from MMSA.run import MMSA_run
 def parse_args():
     parser = argparse.ArgumentParser()
     
+<<<<<<< HEAD
     parser.add_argument('-m', '--model', type=str, default='misa', help='Name of model',
+=======
+    parser.add_argument('-m', '--model', type=str, default='mult', help='Name of model',
+>>>>>>> 0af74ef8527fa3fd0013bed353445ecff88a66c5
                         choices=['lf_dnn', 'ef_lstm', 'tfn', 'mctn','lmf', 'mfn', 'graph_mfn', 'mult', 'bert_mag', 
                                  'misa', 'mfm', 'mlf_dnn', 'mtfn', 'mlmf', 'self_mm', 'mmim','tfr_net','tetfn','cenet'])
     parser.add_argument('-d', '--dataset', type=str, default='mosi',
