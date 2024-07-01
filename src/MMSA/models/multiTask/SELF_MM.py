@@ -18,7 +18,7 @@ class SELF_MM(nn.Module):
         super(SELF_MM, self).__init__()
         # text subnets
         self.aligned = args.need_data_aligned
-        self.text_model = BertTextEncoder(use_finetune=args.use_finetune, transformers=args.transformers, pretrained=args.pretrained)
+        self.text_model = BertTextEncoder(use_finetune=args.use_finetune, transformers=args.transformers, pretrained=args.weight_dir)
 
         # audio-vision subnets
         audio_in, video_in = args.feature_dims[1:]

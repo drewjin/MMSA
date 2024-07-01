@@ -53,7 +53,7 @@ class MISA(nn.Module):
     
         if config.use_bert:
             # text subnets
-            self.bertmodel = BertTextEncoder(use_finetune=config.use_finetune, transformers=config.transformers, pretrained=config.pretrained)
+            self.bertmodel = BertTextEncoder(use_finetune=config.use_finetune, transformers=config.transformers, pretrained=config.weight_dir)
 
         self.vrnn1 = rnn(input_sizes[1], hidden_sizes[1], bidirectional=True)
         self.vrnn2 = rnn(2*hidden_sizes[1], hidden_sizes[1], bidirectional=True)
@@ -228,7 +228,7 @@ class MISA(nn.Module):
         self.shared_or_private_p_t = self.sp_discriminator(self.utt_private_t)
         self.shared_or_private_p_v = self.sp_discriminator(self.utt_private_v)
         self.shared_or_private_p_a = self.sp_discriminator(self.utt_private_a)
-        self.shared_or_private_s = self.sp_discriminator( (self.utt_shared_t + self.utt_shared_v + self.utt_shared_a)/3.0 )
+        self.shared_or_private_s = self.sp_discriminator((self.utt_shared_t + self.utt_shared_v + self.utt_shared_a) / 3.0)
         
         # For reconstruction
         self.reconstruct()

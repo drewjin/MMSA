@@ -111,6 +111,9 @@ class SELF_MM():
         # loop util earlystop
         while True: 
             epochs += 1
+            logger.info(
+                f">>>>> EPOCH[{epochs}] <<<<<"
+            )
             # train
             y_pred = {'M': [], 'T': [], 'A': [], 'V': []}
             y_true = {'M': [], 'T': [], 'A': [], 'V': []}
