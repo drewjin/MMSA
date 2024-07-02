@@ -7,6 +7,7 @@ from .multiTask import *
 from .singleTask import *
 from .missingTask import *
 from .subNets import AlignSubNet
+from .subNets import EnhanceNet_v1, EnhanceNet_v2
 from pytorch_transformers import BertConfig
 
 class AMIO(nn.Module):
@@ -43,6 +44,14 @@ class AMIO(nn.Module):
             if 'seq_lens' in args.keys():
                 args['seq_lens'] = self.alignNet.get_seq_len()
         lastModel = self.MODEL_MAP[args['model_name']]
+
+        self.need_data_enhancement = args.get('need_data_enhancement', None)
+        if self.need_data_enhancement:
+            version = args.get('version', 2)
+            if version == 1:
+                self.enhanceNet = EnhanceNet_v1(args)
+            elif version == 2:
+                self.enhanceNet = EnhanceNet_v2(args)
 
         if args.model_name == 'cenet':
             config = BertConfig.from_pretrained(args.weight_dir, num_labels=1, finetuning_task='sst')

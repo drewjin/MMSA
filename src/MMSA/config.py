@@ -31,6 +31,20 @@ def get_config_regression(
         dataset_args = dataset_args['aligned']
     else:
         dataset_args = dataset_args['unaligned']
+    enhance_net_args = config_all['enhanceNetParams']
+    en_version = model_common_args['enhance_net_version']
+    if en_version == 1:
+        enhance_net_args = {'enhance_net_args':{
+            'split_rate':enhance_net_args['enhancement_split'],
+            'version': 'v1',
+            'hyper_params':enhance_net_args['v1']
+        }}
+    elif en_version == 2:
+        enhance_net_args = {'enhance_net_args':{
+            'split_rate':enhance_net_args['enhancement_split'],
+            'version': 'v2',
+            'hyper_params':enhance_net_args['v2']
+        }}
 
     config = {}
     config['model_name'] = model_name
@@ -38,6 +52,7 @@ def get_config_regression(
     config.update(dataset_args)
     config.update(model_common_args)
     config.update(model_dataset_args)
+    config.update(enhance_net_args)
     config['featurePath'] = os.path.join(config_all['datasetCommonParams']['dataset_root_dir'], config['featurePath'])
     config = edict(config) # use edict for backward compatibility with MMSA v1.0
 

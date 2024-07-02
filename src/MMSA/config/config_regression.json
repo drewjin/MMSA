@@ -79,6 +79,20 @@
       }
     }
   },
+  "enhanceNetParams":{
+    "enhancement_split": {
+      "audio": [20, 1, 12],
+      "vision": [288, 6, 340, 40, 35]
+    },
+    "v1": {
+      "dropout": 0.2,
+      "num_specific_heads": 1
+    },
+    "v2": {
+      "dropout": 0.2,
+      "num_specific_heads": 4
+    }
+  },
   "tfn": {
     "commonParams": {
       "need_data_aligned": false,
@@ -524,6 +538,8 @@
     "commonParams": {
       "need_data_aligned": false,
       "need_model_aligned": false,
+      "need_data_enhancement": true,
+      "enhance_net_version": 1,
       "early_stop": 8,
       "use_bert": false,
       "use_bert_finetune": false,
