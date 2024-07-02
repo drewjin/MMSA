@@ -21,7 +21,7 @@ class MMDataset(Dataset):
         }
         DATASET_MAP[args['dataset_name']]()
 
-    def __init_mosi(self):
+    def __init_datasets(self):
         if self.args['custom_feature']:
             # use custom feature file extracted with MMSA-FET
             with open(self.args['custom_feature'], 'rb') as f:
@@ -107,14 +107,17 @@ class MMDataset(Dataset):
         if self.args.get('need_normalized'):
             self.__normalize()
     
+    def __init_mosi(self):
+        return self.__init_datasets()
+
     def __init_mosei(self):
-        return self.__init_mosi()
+        return self.__init_datasets()
 
     def __init_sims(self):
-        return self.__init_mosi()
+        return self.__init_datasets()
     
     def __init_simsv2(self):
-        return self.__init_mosi()
+        return self.__init_datasets()
 
     def generate_m(self, modality, input_mask, input_len, missing_rate, missing_seed, mode='text'):
         

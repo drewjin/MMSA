@@ -30,7 +30,7 @@
     },
     "mosei": {
       "aligned": {
-        "featurePath": "MOSEI/Processed/aligned_50.pkl",
+        "featurePath": "CMU-MOSEI/Processed/aligned_50.pkl",
         "seq_lens": [50, 50, 50],
         "feature_dims": [768, 74, 35],
         "train_samples": 16326,
@@ -41,7 +41,7 @@
         "missing_seed": [1111, 1111, 1111]
       },
       "unaligned": {
-        "featurePath": "MOSEI/Processed/unaligned_50.pkl",
+        "featurePath": "CMU-MOSEI/Processed/unaligned_50.pkl",
         "seq_lens": [50, 500, 375],
         "feature_dims": [768, 74, 35],
         "train_samples": 16326,
@@ -54,7 +54,7 @@
     },
     "sims": {
       "unaligned": {
-        "featurePath": "SIMS/Processed/unaligned_39.pkl",
+        "featurePath": "CH-SIMS/Processed/unaligned_39.pkl",
         "seq_lens": [39, 400, 55],
         "feature_dims": [768, 33, 709],
         "train_samples": 1368,
@@ -67,7 +67,7 @@
     },
     "simsv2": {
       "unaligned": {
-        "featurePath": "SIMSv2/Processed/sims_unaligned.pkl",
+        "featurePath": "CH-SIMS v2/Processed/sims_unaligned.pkl",
         "seq_lens": [39, 400, 55],
         "feature_dims": [768, 33, 709],
         "train_samples": 2722,

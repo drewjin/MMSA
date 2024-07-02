@@ -16,7 +16,7 @@ def parse_args():
     parser.add_argument('-m', '--model', type=str, default='self_mm', help='Name of model',
                         choices=['lf_dnn', 'ef_lstm', 'tfn', 'mctn','lmf', 'mfn', 'graph_mfn', 'mult', 'bert_mag', 
                                  'misa', 'mfm', 'mlf_dnn', 'mtfn', 'mlmf', 'self_mm', 'mmim','tfr_net','tetfn','cenet'])
-    parser.add_argument('-d', '--dataset', type=str, default='mosi',
+    parser.add_argument('-d', '--dataset', type=str, default='mosei',
                         choices=['sims', 'mosi', 'mosei', 'simsv2'], help='Name of dataset')
     parser.add_argument('-c', '--config', type=str, default=None,
                         help='Path to config file. If not specified, default config file will be used.')
