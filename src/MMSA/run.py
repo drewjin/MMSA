@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import torch
 from easydict import EasyDict as edict
+from argparse import Namespace
 
 from .config import get_config_regression, get_config_tune
 from .data_loader import MMDataLoader
@@ -66,6 +67,7 @@ def MMSA_run(
     model_save_dir: str = Path().home() / "MMSA" / "saved_models",
     res_save_dir: str = Path().home() / "MMSA" / "results",
     log_dir: str = Path().home() / "MMSA" / "logs",
+    cmd_args: Namespace = None,
 ):
     """Train and Test MSA models.
 
@@ -189,7 +191,7 @@ def MMSA_run(
             df2.to_csv(csv_file, index=None)
             logger.info(f"Results saved to {csv_file}.")
     else: # run normal
-        args = get_config_regression(model_name, dataset_name, config_file)
+        args = get_config_regression(model_name, dataset_name, config_file, cmd_args)
         args['model_save_path'] = Path(model_save_dir) / f"{args['model_name']}-{args['dataset_name']}.pth"
         args['device'] = assign_gpu(gpu_ids)
         args['train_mode'] = 'regression' # backward compatibility. TODO: remove all train_mode in code

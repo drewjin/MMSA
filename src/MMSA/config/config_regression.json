@@ -89,14 +89,57 @@
       "num_specific_heads": 1
     },
     "v2": {
-      "dropout": 0.2,
-      "num_specific_heads": 4
+      "global_residual": false,
+      "use_decomposition": false,
+      "decompose": {
+        "num_layers": 2,
+        "residual": true,
+        "ffn": true,
+        "decompose_attn": {
+          "num_specific_heads": [4, 1, 4, 1, 1],
+          "dropout": 0.2
+        },
+        "decompose_ffn": {
+          "dropout": 0.2
+        }
+      },
+      "use_early_enhance": true,
+      "early_enhance": {
+        "residual": true,
+        "ffn": true,
+        "attn": {
+          "embed_dim": 512,
+          "num_heads": 4,
+          "dropout": 0.2
+        },
+        "mlp": {
+          "dropout": 0.2
+        }
+      },
+      "use_late_enhance": false,
+      "late_enhance": {
+        "residual": true,
+        "ffn": true,
+        "attn": {
+          "embed_dim": 512,
+          "num_heads": 4,
+          "dropout": 0.2
+        },
+        "mlp": {
+          "dropout": 0.2
+        } 
+      },
+      "late_ffn":{
+        "dropout": 0.2
+      }   
     }
   },
   "tfn": {
     "commonParams": {
       "need_data_aligned": false,
       "need_model_aligned": false,
+      "need_data_enhancement": false,
+      "enhance_net_version": 2,
       "need_normalized": true,
       "early_stop": 8
     },
@@ -539,7 +582,7 @@
       "need_data_aligned": false,
       "need_model_aligned": false,
       "need_data_enhancement": true,
-      "enhance_net_version": 1,
+      "enhance_net_version": 2,
       "early_stop": 8,
       "use_bert": false,
       "use_bert_finetune": false,

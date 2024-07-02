@@ -5,6 +5,21 @@ import torch.nn as nn
 __all__ = ['EnhanceNet_v1', 'EnhanceNet_v2']
 
 
+class FeedForwardNetwork(nn.Module):
+    def __init__(self, args, in_embed_dim, o_embed_dim) -> None:
+        super(FeedForwardNetwork, self).__init__()
+        self.args = args
+        self.MLP = nn.Sequential(
+            nn.Linear(in_embed_dim, 2*in_embed_dim),
+            nn.ReLU(),
+            nn.Dropout(args.dropout),
+            nn.Linear(2*in_embed_dim, o_embed_dim),
+        )
+    
+    def forward(self, X):
+        return self.MLP(X)
+    
+
 class Decomposer(nn.Module):
     """
         Decomposer: Decompose the input into activities
@@ -42,6 +57,11 @@ class DecomposeAttention(nn.Module):
     
     def __dot_product(self, args, split_rate):
         nheads = args['num_specific_heads']
+        if nheads != 1:
+            raise NotImplementedError(
+                r"The current implementation only supports nheads equal to 1." 
+                r"Please adjust the value of nheads accordingly."
+            )
         dropout = args['dropout']
         self.attn_layers = nn.ModuleList([ # NOTE： How to parallelize the computation?
             nn.MultiheadAttention(embed_dim=dec_size, num_heads=nheads, dropout=dropout)
@@ -52,38 +72,161 @@ class DecomposeAttention(nn.Module):
         nheads = args['num_specific_heads']
         dropout = args['dropout']
         self.attn_layers = nn.ModuleList([ # NOTE： How to parallelize the computation?
-            nn.MultiheadAttention(embed_dim=dec_size, num_heads=nheads, dropout=dropout)
-            for dec_size in split_rate
+            nn.MultiheadAttention(embed_dim=dec_size, num_heads=nhead, dropout=dropout)
+            for dec_size, nhead in zip(split_rate, nheads)
         ])
 
     def forward(self, X):
         return torch.cat([attn_layer_i(query=x_i, key=x_i, value=x_i)[0] 
                           for x_i, attn_layer_i in zip(X, self.attn_layers)], dim=-1)
-    
+
 
 class DecomposeEnhanceLayer(nn.Module):
     """
-        DecomposeEnhanceLayer
+        DecomposeEnhanceLayer: 
     """
     def __init__(self, args, split_rate, version) -> None:
         super(DecomposeEnhanceLayer, self).__init__()
+        self.args = args
+        self.use_residual = args.get('residual', True)
+        self.use_ffn = args.get('ffn', True)
+        self.embed_dim = embed_dim = sum(split_rate)
         self.decomposer = Decomposer(args, split_rate)
-        self.dec_attn   = DecomposeAttention(args, version, split_rate)
+        self.dec_attn   = DecomposeAttention(args['decompose_attn'], version, split_rate)
+        self.layer_norm1 = nn.LayerNorm(embed_dim)
+        if self.use_ffn:
+            self.ffn = FeedForwardNetwork(args['decompose_ffn'], embed_dim, embed_dim)
+            self.layer_norm2 = nn.LayerNorm(embed_dim)
+    
+    def forward(self, X):
+        # Decompose Attention
+        res_X = X
+        dec_X = self.decomposer(X)
+        dec_att_X = self.dec_attn(dec_X)
+        if self.use_residual:
+            H = self.layer_norm1(dec_att_X + res_X)
+        else:
+            H = self.layer_norm1(dec_att_X)
+        
+        # Feed Forward Network
+        res_H = H
+        if self.use_ffn:
+            T = self.ffn(H)
+            if self.use_residual:
+                O = self.layer_norm2(T + res_H)
+            else:
+                O = self.layer_norm2(T)
+        else:
+            O = H
 
-
-class DecomposeEnhanceBlock(nn.Module):
-    def __init__(self, args, split_rate, version, num_layers) -> None:
-        super(DecomposeEnhanceBlock, self).__init__()
+        return O
         
 
 
-class EarlyEnhanceLayer(nn.Module):
-    pass
+class DecomposeEnhanceBlock(nn.Module):
+    """
+        DecomposeEnhanceBlock:
+    """
+    def __init__(self, args, split_rate, version) -> None:
+        super(DecomposeEnhanceBlock, self).__init__()
+        self.args  = args
+        num_layers = args.get('num_layers', 1)
+        a_sr, v_sr = split_rate.values()
+        self.v_layers = nn.Sequential(*[
+            DecomposeEnhanceLayer(args, v_sr, version) 
+            for _ in range(num_layers)
+        ])
+        self.a_layers = nn.Sequential(*[
+            DecomposeEnhanceLayer(args, a_sr, version) 
+            for _ in range(num_layers)
+        ])
+
+    def forward(self, X_v, X_a):
+        return (self.v_layers(X_v), self.a_layers(X_a))
 
 
-class LateEnhanceLayer(nn.Module):
-    pass
+class BaseEnhanceLayer(nn.Module):
+    """
+        EarlyEnhanceLayer
+    """
+    def __init__(self, args, embed_dim):
+        super(BaseEnhanceLayer, self).__init__()
+        self.args = args
+        self.use_residual = args.get('residual', True)
+        self.use_ffn = args.get('ffn', True)
+        attn_param = args.get('attn', None)
+        ffn_param = args.get('mlp', None)
+        proj_dim = attn_param['embed_dim']
+        self.proj1 = nn.Linear(embed_dim, proj_dim)
+        self.mh_attn = nn.MultiheadAttention(
+            embed_dim=proj_dim, num_heads=attn_param['num_heads'], dropout=attn_param['dropout'], batch_first=True
+        )
+        self.layer_norm1 = nn.LayerNorm(proj_dim)
+        if args['ffn']:
+            self.ffn = FeedForwardNetwork(ffn_param, proj_dim, proj_dim)
+            self.layer_norm2 = nn.LayerNorm(proj_dim)
+        self.proj2 = nn.Linear(proj_dim, embed_dim)
+
+
+    def forward(self, X):
+        X = self.proj1(X)
+        res_X = X
+        X = self.mh_attn(X, X, X)[0]
+        if self.use_residual:
+            H = self.layer_norm1(X + res_X)
+        else:
+            H = self.layer_norm1(X)
+        
+        res_H = H
+        if self.use_ffn:
+            T = self.ffn(H)
+            if self.use_residual:
+                O = self.layer_norm2(T + res_H)
+            else:
+                O = self.layer_norm2(T)
+        else:
+            O = H
+        
+        return self.proj2(O)
+
+class BaseEnhanceBlock(nn.Module):
+    """
+        EarlyEnhanceBlock
+    """
+    def __init__(self, args, split_rate):
+        super(BaseEnhanceBlock, self).__init__()
+        self.args = args
+        num_layers = args.get('num_layers', 1)
+        a_embed_dim, v_embed_dim = sum(split_rate['audio']), sum(split_rate['vision'])
+        self.v_layers = nn.Sequential(*[
+            BaseEnhanceLayer(args, v_embed_dim)
+            for _ in range(num_layers)
+        ])
+        self.a_layers = nn.Sequential(*[
+            BaseEnhanceLayer(args, a_embed_dim)
+            for _ in range(num_layers)
+        ])
+    def forward(self, X_v, X_a):
+        return (self.v_layers(X_v), self.a_layers(X_a))
     
+
+class LateFFN(nn.Module):
+    def __init__(self, args, v_embed_dim, a_embed_dim):
+        super(LateFFN, self).__init__()
+        self.v_net = nn.Sequential(
+            nn.LayerNorm(v_embed_dim),
+            FeedForwardNetwork(args, v_embed_dim, v_embed_dim),
+            nn.LayerNorm(v_embed_dim)
+        )
+        self.a_net = nn.Sequential(
+            nn.LayerNorm(a_embed_dim),
+            FeedForwardNetwork(args, a_embed_dim, a_embed_dim),
+            nn.LayerNorm(a_embed_dim)
+        )
+
+    def forward(self, X_v, X_a):
+        return (self.v_net(X_v), self.a_net(X_a))
+
 
 class EnhanceNet_v1(nn.Module):
     """
@@ -94,6 +237,9 @@ class EnhanceNet_v1(nn.Module):
         split_rate   = args.get('split_rate', None)
         self.params  = params
         self.version = 'v1'
+
+        self.v_sr   = split_rate['vision']
+        self.a_sr   = split_rate['audio']
 
         self.v_dec  = Decomposer(args, self.v_sr)
         self.a_dec  = Decomposer(args, self.a_sr)
@@ -114,32 +260,66 @@ class EnhanceNet_v2(nn.Module):
         - DecomposeAttention(Multi-Head version)
         - GlobalMultiHeadAttention and ResidualConnection
     """
-    def __init__(self, args) -> None:
+    def __init__(self, args, params) -> None:
         super(EnhanceNet_v2, self).__init__()
         split_rate   = args.get('split_rate', None)
-        nheads       = args['num_specific_heads']
-        dropout      = args['dropout']
         self.params  = params
         self.version = 'v2'
-
-        self.v_sr   = split_rate['vision']
-        self.a_sr   = split_rate['audio']
-        v_dim       = sum(self.v_sr)
-        a_dim       = sum(self.a_sr)
-
-        self.v_dec  = Decomposer(args, self.v_sr)
-        self.a_dec  = Decomposer(args, self.a_sr)
-
-        self.v_dec_attn = DecomposeAttention(params, self.version, self.v_sr)
-        self.a_dec_attn = DecomposeAttention(params, self.version, self.a_sr)
-
-        self.v_self_attn_post = nn.MultiheadAttention(embed_dim=v_dim, num_heads=nheads, dropout=dropout)
-        self.a_self_attn_post = nn.MultiheadAttention(embed_dim=a_dim, num_heads=nheads, dropout=dropout)
+        if params['use_decomposition']: 
+            self.dec_en_net = DecomposeEnhanceBlock(params['decompose'], split_rate, self.version)
+        if params['use_early_enhance']:
+            self.early_en_net = BaseEnhanceBlock(params['early_enhance'], split_rate)
+            self.late_ffns = LateFFN(params['late_ffn'], sum(split_rate['vision']), sum(split_rate['audio']))
+        if params['use_late_enhance']:
+            self.late_en_net = BaseEnhanceBlock(params['late_enhance'], split_rate)
+        if params['global_residual']:
+            self.glb_ffns = LateFFN(params['late_ffn'], sum(split_rate['vision']), sum(split_rate['audio']))
 
     def forward(self, vision, audio):
-        split_v, split_a = self.v_dec(vision), self.a_dec(audio)
-        enhanced_v, enhanced_a = self.v_dec_attn(split_v), self.a_dec_attn(split_a)
+        glb_res = self.params.get('global_residual', False)
+        early = self.params.get('use_early_enhance', True)
+        late = self.params.get('use_late_enhance', True)
+        dec = self.params.get('use_decomposition', True)
 
+        if glb_res:
+            res_org_v, res_org_a = vision, audio
+        
+        if dec:
+            O_dec_v, O_dec_a = self.dec_en_net(vision, audio)
+            if late:
+                O_l_v, O_l_a = self.late_en_net(O_dec_v, O_dec_a)
+                if early:
+                    O_e_v, O_e_a = self.early_en_net(vision, audio) 
+                    O_v, O_a = self.late_ffns(O_l_v + O_e_v, O_l_a + O_e_a)
+                    if glb_res:
+                        O_v, O_a = self.glb_ffns(O_v + res_org_v, O_a + res_org_a)
+                else:
+                    if glb_res:
+                        O_v, O_a = self.glb_ffns(O_l_v + res_org_v, O_l_a + res_org_a)
+                    else:
+                        O_v, O_a = O_l_v, O_l_a
+        else:
+            if late:
+                O_l_v, O_l_a = self.late_en_net(vision, audio)
+                if early:
+                    O_e_v, O_e_a = self.early_en_net(vision, audio) 
+                    O_v, O_a = self.late_ffns(O_l_v + O_e_v, O_l_a + O_e_a)
+                    if glb_res:
+                        O_v, O_a = self.glb_ffns(O_v + res_org_v, O_a + res_org_a)
+                else:
+                    if glb_res:
+                        O_v, O_a = self.glb_ffns(O_l_v + res_org_v, O_l_a + res_org_a)
+                    else:
+                        O_v, O_a = O_l_v, O_l_a
+            else:
+                O_e_v, O_e_a = self.early_en_net(vision, audio)
+                if glb_res:
+                    O_v, O_a = self.glb_ffns(O_e_v + res_org_v, O_e_a + res_org_a)
+                else:
+                    O_v, O_a = O_e_v, O_e_a
+        return O_v, O_a
+            
+                
 
 if __name__ == '__main__':
     def get_config_regression(
