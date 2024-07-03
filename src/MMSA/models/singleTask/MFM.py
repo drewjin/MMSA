@@ -173,7 +173,8 @@ class MFM(nn.Module):
 
         mfn_last = self.mfn_encoder.forward(text_x, audio_x, video_x)['L']  # mfn_res = {'M': output, 'L': last_hs}
         zy = self.last_to_zy_fc1(mfn_last)
-        mmd_loss = loss_MMD(zl, self.args)+loss_MMD(za, self.args)+loss_MMD(zv, self.args)+loss_MMD(zy, self.args)
+        mmd_loss = loss_MMD(zl, self.args) + loss_MMD(za, self.args) + \
+                   loss_MMD(zv, self.args) + loss_MMD(zy, self.args)
         missing_loss = 0.0
 
         fy = F.relu(self.zy_to_fy_fc2(self.zy_to_fy_dropout(F.relu(self.zy_to_fy_fc1(zy)))))
@@ -192,6 +193,8 @@ class MFM(nn.Module):
 
         y_hat = self.fy_to_y_fc2(self.fy_to_y_dropout(F.relu(self.fy_to_y_fc1(fy))))
         
-        gen_loss = self.args.lda_xl * F.mse_loss(x_l_hat,x_l) + self.args.lda_xa * F.mse_loss(x_a_hat,x_a) + self.args.lda_xv * F.mse_loss(x_v_hat,x_v)
+        gen_loss = self.args.lda_xl * F.mse_loss(x_l_hat,x_l) + \
+                   self.args.lda_xa * F.mse_loss(x_a_hat,x_a) + \
+                   self.args.lda_xv * F.mse_loss(x_v_hat,x_v)
 
         return y_hat,gen_loss,mmd_loss,missing_loss

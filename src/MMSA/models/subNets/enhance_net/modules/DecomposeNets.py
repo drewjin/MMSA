@@ -64,8 +64,9 @@ class DecomposeAttention(nn.Module):
         ])
 
     def forward(self, X):
-        return torch.cat([attn_layer_i(query=x_i, key=x_i, value=x_i)[0] 
-                          for x_i, attn_layer_i in zip(X, self.attn_layers)], dim=-1)
+        return torch.cat([
+            attn_layer_i(query=x_i, key=x_i, value=x_i)[0] 
+            for x_i, attn_layer_i in zip(X, self.attn_layers)], dim=-1)
 
 
 class DecomposeEnhanceLayer(nn.Module):
