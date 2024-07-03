@@ -87,22 +87,20 @@ class SimpleEnhanceLayer(nn.Module):
         attn_param = args.get('attn', None)
         proj_dim = attn_param['embed_dim']
         self.proj1 = nn.Linear(embed_dim, proj_dim)
-        self.layer_norm1 = nn.LayerNorm(proj_dim)
         self.mh_attn = nn.MultiheadAttention(
             embed_dim=proj_dim, num_heads=attn_param['num_heads'], dropout=attn_param['dropout'], batch_first=True
         )
-        self.layer_norm2 = nn.LayerNorm(proj_dim)
+        self.layer_norm = nn.LayerNorm(proj_dim)
         self.proj2 = nn.Linear(proj_dim, embed_dim)
     
     def forward(self, X):
-        res = X
-        X = self.layer_norm1(X)
         X = self.proj1(X)
+        res = X
         X = self.mh_attn(X, X, X)[0]
         if self.use_residual:
-            H = self.layer_norm2(X + res)
+            H = self.layer_norm(X + res)
         else:
-            H = self.layer_norm2(X)
+            H = self.layer_norm(X)
         O = self.proj2(H)
         return O
     

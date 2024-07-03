@@ -117,12 +117,12 @@ class EnhanceNet_v3(nn.Module):
         self.dec_en_net = DecomposeEnhanceBlock(params['decompose'], split_rate, self.version)
         self.simple_en_net = SimpleEnhanceBlock(params['simple_enhance'], split_rate)
         self.lffn1 = LateFFN(params['late_ffn'], sum(split_rate['vision']), sum(split_rate['audio']))
-        self.lffn2 = LateFFN(params['late_ffn'], sum(split_rate['audio']), sum(split_rate['vision']))
+        self.lffn2 = LateFFN(params['late_ffn'], sum(split_rate['vision']), sum(split_rate['audio']))
     
     def forward(self, X_v, X_a):
         res_X_v, res_X_a = X_v, X_a
-        X_dec_v, X_dec_a = self.decompose_net(X_v, X_a)
-        X_s_v, X_s_a = self.enhance_net(X_v, X_a)
+        X_dec_v, X_dec_a = self.dec_en_net(X_v, X_a)
+        X_s_v, X_s_a = self.simple_en_net(X_v, X_a)
         H_v, H_a = self.lffn1(X_dec_v + X_s_v, X_dec_a + X_s_a)
         O_v, O_a = self.lffn2(H_v + res_X_v, H_a + res_X_a)
         return O_v, O_a

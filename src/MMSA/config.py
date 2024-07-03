@@ -41,7 +41,7 @@ def get_config_regression(
         if isinstance(cmd_args.enhance_net, str):
             temp = []
             for elem in en_net:
-                if elem in {'0', '1', '2'}:
+                if elem in {'0', '1', '2', '3'}:
                     temp.append(int(elem))
             en_net = temp
         model_common_args['need_data_enhancement'] = bool(en_net[0])

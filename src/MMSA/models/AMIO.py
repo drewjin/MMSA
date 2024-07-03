@@ -13,6 +13,7 @@ from pytorch_transformers import BertConfig
 class AMIO(nn.Module):
     def __init__(self, args):
         super(AMIO, self).__init__()
+        self.args = args
         self.MODEL_MAP = {
             # single-task
             'tfn': TFN,
@@ -64,5 +65,9 @@ class AMIO(nn.Module):
         if self.need_model_aligned:
             text_x, audio_x, video_x = self.alignNet(text_x, audio_x, video_x)
         if self.need_data_enhancement:
-            video_x, audio_x= self.enhanceNet(video_x, audio_x)
+            if self.args['model_name'] == 'self_mm':
+                video_ex, audio_ex = self.enhanceNet(video_x[0], audio_x[0])
+                video_x, audio_x = (video_ex, video_x[1]), (audio_ex, audio_x[1])
+            else:
+                video_x, audio_x = self.enhanceNet(video_x, audio_x)
         return self.Model(text_x, audio_x, video_x, *args, **kwargs)
