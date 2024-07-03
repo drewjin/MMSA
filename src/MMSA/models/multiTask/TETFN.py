@@ -16,7 +16,7 @@ class TETFN(nn.Module):
         # text subnets
         self.args = args
         self.aligned = args.need_data_aligned
-        self.text_model = BertTextEncoder(use_finetune=args.use_finetune, transformers=args.transformers, pretrained=args.pretrained)
+        self.text_model = BertTextEncoder(use_finetune=args.use_finetune, transformers=args.transformers, pretrained=args.weight_dir)
 
         # audio-vision subnets
         text_in, audio_in, video_in = args.feature_dims

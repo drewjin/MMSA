@@ -30,7 +30,7 @@
     },
     "mosei": {
       "aligned": {
-        "featurePath": "MOSEI/Processed/aligned_50.pkl",
+        "featurePath": "CMU-MOSEI/Processed/aligned_50.pkl",
         "seq_lens": [50, 50, 50],
         "feature_dims": [768, 74, 35],
         "train_samples": 16326,
@@ -41,7 +41,7 @@
         "missing_seed": [1111, 1111, 1111]
       },
       "unaligned": {
-        "featurePath": "MOSEI/Processed/unaligned_50.pkl",
+        "featurePath": "CMU-MOSEI/Processed/unaligned_50.pkl",
         "seq_lens": [50, 500, 375],
         "feature_dims": [768, 74, 35],
         "train_samples": 16326,
@@ -54,7 +54,7 @@
     },
     "sims": {
       "unaligned": {
-        "featurePath": "SIMS/Processed/unaligned_39.pkl",
+        "featurePath": "CH-SIMS/Processed/unaligned_39.pkl",
         "seq_lens": [39, 400, 55],
         "feature_dims": [768, 33, 709],
         "train_samples": 1368,
@@ -67,7 +67,7 @@
     },
     "simsv2": {
       "unaligned": {
-        "featurePath": "SIMSv2/Processed/sims_unaligned.pkl",
+        "featurePath": "CH-SIMS v2/Processed/sims_unaligned.pkl",
         "seq_lens": [39, 400, 55],
         "feature_dims": [768, 33, 709],
         "train_samples": 2722,
@@ -79,10 +79,96 @@
       }
     }
   },
+  "enhanceNetParams":{
+    "enhancement_split": {
+      "audio": [20, 1, 12],
+      "vision": [288, 6, 340, 40, 35]
+    },
+    "v1": {
+      "dropout": 0.2,
+      "num_specific_heads": 1
+    },
+    "v2": {
+      "global_residual": false,
+      "use_decomposition": true,
+      "decompose": {
+        "num_layers": 2,
+        "residual": true,
+        "ffn": true,
+        "decompose_attn": {
+          "num_specific_heads": [4, 1, 4, 1, 1],
+          "dropout": 0.2
+        },
+        "decompose_ffn": {
+          "dropout": 0.2
+        }
+      },
+      "use_early_enhance": true,
+      "early_enhance": {
+        "residual": true,
+        "ffn": true,
+        "attn": {
+          "embed_dim": 512,
+          "num_heads": 4,
+          "dropout": 0.2
+        },
+        "mlp": {
+          "dropout": 0.2
+        }
+      },
+      "use_late_enhance": true,
+      "late_enhance": {
+        "residual": true,
+        "ffn": true,
+        "attn": {
+          "embed_dim": 512,
+          "num_heads": 4,
+          "dropout": 0.2
+        },
+        "mlp": {
+          "dropout": 0.2
+        } 
+      },
+      "late_ffn":{
+        "dropout": 0.2
+      }   
+    },
+    "v3": {
+      "decompose": {
+        "num_layers": 2,
+        "residual": true,
+        "ffn": true,
+        "decompose_attn": {
+          "num_specific_heads": [4, 1, 4, 1, 1],
+          "dropout": 0.2
+        },
+        "decompose_ffn": {
+          "dropout": 0.2
+        }
+      },
+      "simple_enhance": {
+        "residual": true,
+        "ffn": true,
+        "attn": {
+          "embed_dim": 768,
+          "num_heads": 4,
+          "dropout": 0.2
+        },
+        "mlp": {
+          "dropout": 0.2
+        }
+      },
+      "late_ffn": {
+        "dropout": 0.2
+      }
+    }
+  },
   "tfn": {
     "commonParams": {
       "need_data_aligned": false,
       "need_model_aligned": false,
+      "need_data_enhancement": false,
+      "enhance_net_version": 2,
       "need_normalized": true,
       "early_stop": 8
     },
@@ -524,6 +610,8 @@
     "commonParams": {
       "need_data_aligned": false,
       "need_model_aligned": false,
+      "need_data_enhancement": true,
+      "enhance_net_version": 2,
       "early_stop": 8,
       "use_bert": false,
       "use_bert_finetune": false,

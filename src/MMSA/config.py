@@ -3,10 +3,11 @@ import os
 from pathlib import Path
 import random
 from easydict import EasyDict as edict
+from argparse import Namespace
 
 
 def get_config_regression(
-    model_name: str, dataset_name: str, config_file: str = ""
+    model_name: str, dataset_name: str, config_file: str = "", cmd_args: Namespace = None,
 ) -> dict:
     """
     Get the regression config of given dataset and model from config file.
@@ -32,34 +33,75 @@ def get_config_regression(
     else:
         dataset_args = dataset_args['unaligned']
 
+    enhance_net_args = {}
+    if dataset_name not in ['sims', 'simsv2']:
+        dataset_args['need_data_enhancement'] = False
+    else:
+        en_net = cmd_args.enhance_net
+        if isinstance(cmd_args.enhance_net, str):
+            temp = []
+            for elem in en_net:
+                if elem in {'0', '1', '2', '3'}:
+                    temp.append(int(elem))
+            en_net = temp
+        model_common_args['need_data_enhancement'] = bool(en_net[0])
+        enhance_net_args = config_all['enhanceNetParams']
+        model_common_args['enhance_net_version'] = en_version = en_net[1]
+        if en_version == 1:
+            enhance_net_args = {'enhance_net_args':{
+                'split_rate':enhance_net_args['enhancement_split'],
+                'version': 'v1',
+                'hyper_params':enhance_net_args['v1']
+            }}
+        elif en_version == 2:
+            enhance_net_args = {'enhance_net_args':{
+                'split_rate':enhance_net_args['enhancement_split'],
+                'version': 'v2',
+                'hyper_params':enhance_net_args['v2']
+            }}
+        elif en_version == 3:
+            enhance_net_args = {'enhance_net_args':{
+                'split_rate':enhance_net_args['enhancement_split'],
+                'version': 'v3',
+                'hyper_params':enhance_net_args['v3']
+            }}
+
     config = {}
     config['model_name'] = model_name
     config['dataset_name'] = dataset_name
     config.update(dataset_args)
     config.update(model_common_args)
     config.update(model_dataset_args)
+    config.update(enhance_net_args)
     config['featurePath'] = os.path.join(config_all['datasetCommonParams']['dataset_root_dir'], config['featurePath'])
     config = edict(config) # use edict for backward compatibility with MMSA v1.0
 
-    pretrained_weight_root = config_all['pretrainedWeights']['weights_root_dir']
-    if config['transformers'] not in [None, [], '']:
-        config['weight_dir'] = os.path.join(pretrained_weight_root, config['transformers'], config['pretrained'])
-    else:
-        config['weight_dir'] = os.path.join(pretrained_weight_root, config['pretrained'])
+    maybe_use_transformers = config.get('transformers', None)
+    if maybe_use_transformers is None:
+        no_transformers_key = True
+        maybe_use_transformers = config.get('use_bert', None)
+        if maybe_use_transformers:
+            config['transformers'] = 'bert'
+    if maybe_use_transformers is not None:
+        pretrained_weight_root = config_all['pretrainedWeights']['weights_root_dir']
+        if config['transformers'] not in [None, [], '']:
+            config['weight_dir'] = os.path.join(pretrained_weight_root, config['transformers'], config['pretrained'])
+        else:
+            config['weight_dir'] = os.path.join(pretrained_weight_root, config['pretrained'])
 
-    weight_dir = config['weight_dir']
-    if config['transformers'] == 'bert':
-        weight_dir = weight_dir.split('/')
-        cn_bert = 'bert-base-chinese'
-        en_bert = 'bert-base-uncased'
-        if config['language']== 'cn' and weight_dir[-1] != cn_bert:
-            weight_dir[-1] = cn_bert
-            weight_dir = '/'.join(weight_dir)
-            config['weight_dir'] = weight_dir 
-        elif config['language'] == 'en' and weight_dir[-1] != en_bert:
-            weight_dir[-1] = en_bert
-            weight_dir = '/'.join(weight_dir)
-            config['weight_dir'] = weight_dir 
+        weight_dir = config['weight_dir']
+        if config['transformers'] == 'bert':
+            weight_dir = weight_dir.split('/')
+            cn_bert = 'bert-base-chinese'
+            en_bert = 'bert-base-uncased'
+            if config['language']== 'cn' and weight_dir[-1] != cn_bert:
+                weight_dir[-1] = cn_bert
+                weight_dir = '/'.join(weight_dir)
+                config['weight_dir'] = weight_dir 
+            elif config['language'] == 'en' and weight_dir[-1] != en_bert:
+                weight_dir[-1] = en_bert
+                weight_dir = '/'.join(weight_dir)
+                config['weight_dir'] = weight_dir 
 
     return config
 

@@ -76,8 +76,8 @@ class TFR_NET(nn.Module):
     def __init__(self, args):
         super(TFR_NET, self).__init__()
         self.args = args
-        
-        self.text_model = BertTextEncoder(use_finetune=args.use_bert_finetune)
+        self.pretrainedBertPath = args.weight_dir
+        self.text_model = BertTextEncoder(use_finetune=args.use_bert_finetune, pretrained=self.pretrainedBertPath)
 
         self.align_subnet = Alignment(args)
 
