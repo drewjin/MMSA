@@ -7,7 +7,7 @@ from .multiTask import *
 from .singleTask import *
 from .missingTask import *
 from .subNets import AlignSubNet
-from .subNets import EnhanceNet_v1, EnhanceNet_v2
+from .subNets import EnhanceNet_v1, EnhanceNet_v2, EnhanceNet_v3
 from pytorch_transformers import BertConfig
 
 class AMIO(nn.Module):
@@ -46,11 +46,12 @@ class AMIO(nn.Module):
         lastModel = self.MODEL_MAP[args['model_name']]
 
         self.need_data_enhancement = args.get('need_data_enhancement', None)
-        enargs = args.get('enhance_net_args', None)
-        version = enargs['version']
-        params = enargs['hyper_params']
-        ENHANCENET_MAP = {'v1': EnhanceNet_v1, 'v2': EnhanceNet_v2}
-        self.enhanceNet = ENHANCENET_MAP[version](enargs, params)
+        if self.need_data_enhancement:
+            enargs = args.get('enhance_net_args', None)
+            version = enargs['version']
+            params = enargs['hyper_params']
+            ENHANCENET_MAP = {'v1': EnhanceNet_v1, 'v2': EnhanceNet_v2, 'v3': EnhanceNet_v3}
+            self.enhanceNet = ENHANCENET_MAP[version](enargs, params)
         
 
         if args.model_name == 'cenet':

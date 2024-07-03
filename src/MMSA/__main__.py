@@ -13,7 +13,7 @@ from MMSA.run import MMSA_run
 def parse_args():
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('-m', '--model', type=str, default='tfn', help='Name of model',
+    parser.add_argument('-m', '--model', type=str, default='self_mm', help='Name of model',
                         choices=['lf_dnn', 'ef_lstm', 'tfn', 'mctn','lmf', 'mfn', 'graph_mfn', 'mult', 'bert_mag', 
                                  'misa', 'mfm', 'mlf_dnn', 'mtfn', 'mlmf', 'self_mm', 'mmim','tfr_net','tetfn','cenet'])
     parser.add_argument('-d', '--dataset', type=str, default='sims',
@@ -45,7 +45,7 @@ def parse_args():
                         help='Path to custom audio feature file. Default: ""')
     parser.add_argument('-Fv', '--feature-V', type=str, default='',
                         help='Path to custom video feature file. Default: ""')
-    parser.add_argument('-E', '--enhance-net', type=str, default=[1, 1])
+    parser.add_argument('-E', '--enhance-net', type=str, default=[1, 3])
     
     return parser.parse_args()
 

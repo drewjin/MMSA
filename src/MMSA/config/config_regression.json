@@ -90,7 +90,7 @@
     },
     "v2": {
       "global_residual": false,
-      "use_decomposition": false,
+      "use_decomposition": true,
       "decompose": {
         "num_layers": 2,
         "residual": true,
@@ -116,7 +116,7 @@
           "dropout": 0.2
         }
       },
-      "use_late_enhance": false,
+      "use_late_enhance": true,
       "late_enhance": {
         "residual": true,
         "ffn": true,
@@ -132,6 +132,35 @@
       "late_ffn":{
         "dropout": 0.2
       }   
+    },
+    "v3": {
+      "decompose": {
+        "num_layers": 2,
+        "residual": true,
+        "ffn": true,
+        "decompose_attn": {
+          "num_specific_heads": [4, 1, 4, 1, 1],
+          "dropout": 0.2
+        },
+        "decompose_ffn": {
+          "dropout": 0.2
+        }
+      },
+      "simple_enhance": {
+        "residual": true,
+        "ffn": true,
+        "attn": {
+          "embed_dim": 768,
+          "num_heads": 4,
+          "dropout": 0.2
+        },
+        "mlp": {
+          "dropout": 0.2
+        }
+      },
+      "late_ffn": {
+        "dropout": 0.2
+      }
     }
   },
   "tfn": {
