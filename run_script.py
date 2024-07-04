@@ -43,6 +43,7 @@ def run_experiment(model, enhance):
         print(f"Error occurred while running experiment for model {model} with enhance {enhance}")
 
 # 遍历模型和增强配置列表，依次运行实验
+# for model in ['mult','bert_mag','misa','self_mm','mmim','tetfn']:
 for model in model_list:
     for enhance in enhance_list:
         run_experiment(model, enhance)
