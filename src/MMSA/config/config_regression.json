@@ -1,9 +1,9 @@
 {
   "pretrainedWeights": {
-    "weights_root_dir": "/Users/drew/Documents/DeepLearning/weights"
+    "weights_root_dir": "/home/drew/Desktop/Research/weights"
   },
   "datasetCommonParams": {
-    "dataset_root_dir": "/Users/drew/Documents/DeepLearning/MMSA/datasets",
+    "dataset_root_dir": "/home/drew/Desktop/Research/MMSA/datasets",
     "mosi": {
       "aligned": {
         "featurePath": "CMU-MOSI/Processed/aligned_50.pkl",

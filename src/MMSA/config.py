@@ -77,11 +77,14 @@ def get_config_regression(
     config = edict(config) # use edict for backward compatibility with MMSA v1.0
 
     maybe_use_transformers = config.get('transformers', None)
+    
     if maybe_use_transformers is None:
         no_transformers_key = True
         use_bert = config.get('use_bert', None)
         if maybe_use_transformers:
             config['transformers'] = 'bert'
+    else:
+        no_transformers_key = False
     if (maybe_use_transformers is not None or  
        (maybe_use_transformers is None and no_transformers_key and use_bert)):
         pretrained_weight_root = config_all['pretrainedWeights']['weights_root_dir']

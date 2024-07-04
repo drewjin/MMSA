@@ -230,7 +230,7 @@ class MMIM(nn.Module):
 
         if config.use_bert:
             # text subnets
-            self.bertmodel = BertTextEncoder(use_finetune=config.use_finetune, transformers=config.transformers, pretrained=config.pretrained) #######
+            self.bertmodel = BertTextEncoder(use_finetune=config.use_finetune, transformers=config.transformers, pretrained=config.weight_dir) #######
 
         self.visual_enc = RNNEncoder(
             in_size = config.feature_dims[2],
