@@ -191,13 +191,13 @@ class MISA(nn.Module):
 
             # Use the mean value of bert of the front real sentence length as the final representation of text.
             masked_output = torch.mul(bert_sent_mask.unsqueeze(2), bert_output)
-            mask_len = torch.sum(bert_sent_mask, dim=1, keepdim=True)  
-            bert_output = torch.sum(masked_output, dim=1, keepdim=False) / mask_len
+            unmasked_tokens = torch.sum(bert_sent_mask, dim=1, keepdim=True)  
+            bert_output = torch.sum(masked_output, dim=1, keepdim=False) / unmasked_tokens
 
             utterance_text = bert_output
 
 
-        lengths = mask_len.squeeze().int().detach().cpu().view(-1)
+        lengths = unmasked_tokens.squeeze().int().detach().cpu().view(-1)
         # extract features from visual modality
         final_h1v, final_h2v = self.extract_features(visual, lengths, self.vrnn1, self.vrnn2, self.vlayer_norm)
         utterance_video = torch.cat((final_h1v, final_h2v), dim=2).permute(1, 0, 2).contiguous().view(batch_size, -1)
