@@ -1486,7 +1486,7 @@
         "weight_decay_other": 0.001,
         "weight_gen_loss": [1, 0.01, 0.0001],
         "weight_sim_loss": 5,
-        "num_temporal_head": 25
+        "num_temporal_head": [1, 8, 1]
       }
     }
   },

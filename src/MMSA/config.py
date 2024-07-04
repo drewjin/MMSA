@@ -79,18 +79,24 @@ def get_config_regression(
     maybe_use_transformers = config.get('transformers', None)
     if maybe_use_transformers is None:
         no_transformers_key = True
-        maybe_use_transformers = config.get('use_bert', None)
+        use_bert = config.get('use_bert', None)
         if maybe_use_transformers:
             config['transformers'] = 'bert'
-    if maybe_use_transformers is not None:
+    if (maybe_use_transformers is not None or  
+       (maybe_use_transformers is None and no_transformers_key and use_bert)):
         pretrained_weight_root = config_all['pretrainedWeights']['weights_root_dir']
-        if config['transformers'] not in [None, [], '']:
-            config['weight_dir'] = os.path.join(pretrained_weight_root, config['transformers'], config['pretrained'])
+        if not no_transformers_key:
+            if config['transformers'] not in [[], '']:
+                config['weight_dir'] = os.path.join(pretrained_weight_root, config['transformers'], config['pretrained'])
+            else:
+                config['weight_dir'] = os.path.join(pretrained_weight_root, config['pretrained'])
         else:
-            config['weight_dir'] = os.path.join(pretrained_weight_root, config['pretrained'])
-
+            if use_bert:
+                config['weight_dir'] = os.path.join(pretrained_weight_root, 'bert', config['pretrained'])
+            else:
+                config['weight_dir'] = os.path.join(pretrained_weight_root, config['pretrained'])
         weight_dir = config['weight_dir']
-        if config['transformers'] == 'bert':
+        if ((no_transformers_key and use_bert) or (maybe_use_transformers is not None)):
             weight_dir = weight_dir.split('/')
             cn_bert = 'bert-base-chinese'
             en_bert = 'bert-base-uncased'

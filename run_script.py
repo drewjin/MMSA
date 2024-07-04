@@ -2,8 +2,10 @@ import json
 import subprocess
 
 # 定义模型列表
-model_list = ['lf_dnn', 'ef_lstm', 'tfn', 'mctn', 'lmf', 'mfn', 'graph_mfn', 'mult', 'bert_mag',
-              'misa', 'mfm', 'mlf_dnn', 'mtfn', 'mlmf', 'self_mm', 'mmim', 'tfr_net', 'tetfn', 'cenet']
+model_list = [
+    'lf_dnn', 'ef_lstm', 'tfn', 'mctn', 'lmf', 'mfn', 'graph_mfn', 'mult', 'bert_mag',
+    'misa', 'mfm', 'mlf_dnn', 'mtfn', 'mlmf', 'self_mm', 'mmim', 'tfr_net', 'tetfn', 'cenet'
+]
 
 # 定义增强配置列表，直接使用Python列表
 enhance_list = [
@@ -41,6 +43,6 @@ def run_experiment(model, enhance):
         print(f"Error occurred while running experiment for model {model} with enhance {enhance}")
 
 # 遍历模型和增强配置列表，依次运行实验
-for model in model_list[-3:]:
+for model in model_list:
     for enhance in enhance_list:
         run_experiment(model, enhance)

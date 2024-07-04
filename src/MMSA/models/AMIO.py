@@ -65,9 +65,9 @@ class AMIO(nn.Module):
         if self.need_model_aligned:
             text_x, audio_x, video_x = self.alignNet(text_x, audio_x, video_x)
         if self.need_data_enhancement:
-            if self.args['model_name'] in ['self_mm', 'tetfn']:
+            if self.args['model_name'] in ['self_mm', 'tetfn', 'tfr_net']:
                 video_ex, audio_ex = self.enhanceNet(video_x[0], audio_x[0])
-                video_x, audio_x = (video_ex, video_x[1]), (audio_ex, audio_x[1])
+                video_x, audio_x = tuple([video_ex] + list(video_x[1:])), tuple([audio_ex] + list(audio_x[1:]))
             else:
                 video_x, audio_x = self.enhanceNet(video_x, audio_x)
         return self.Model(text_x, audio_x, video_x, *args, **kwargs)
