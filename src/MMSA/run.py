@@ -87,7 +87,7 @@ def MMSA_run(
         tune_times: Sets of hyper parameters to tune. Default: 50
         custom_feature: Path to custom feature file. The custom feature should
             contain features of all three modalities. If only one modality has
-            customized features, use `feature_*` below. 
+        ding    customized features, use `feature_*` below. 
         feature_T: Path to text feature file. Provide an empty string to use
             default BERT features. Default: ""
         feature_A: Path to audio feature file. Provide an empty string to use
@@ -257,7 +257,18 @@ def _run(args, num_workers=4, is_tune=False, from_sena=False):
     #     model = torch.nn.DataParallel(model,
     #                                   device_ids=args.gpu_ids,
     #                                   output_device=args.gpu_ids[0])
-    trainer = ATIO().getTrain(args)
+    if args.use_accelerate:
+        # model, optimizer, train_dataloader, lr_scheduler = accelerator.prepare(
+        #     model, optimizer, train_dataloader, lr_scheduler
+        # )
+        trainer_dict = {
+            'model': model,
+            'data_loader': dataloader
+        }
+        trainer = ATIO().getTrain(args, trainer=trainer_dict)
+        model, dataloader = trainer.get_model_dataloader()
+    else:
+        trainer = ATIO().getTrain(args)
     # do train
     # epoch_results = trainer.do_train(model, dataloader)
     epoch_results = trainer.do_train(model, dataloader, return_epoch_results=from_sena)

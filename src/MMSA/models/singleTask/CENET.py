@@ -236,7 +236,8 @@ class BertEmbeddings(nn.Module):
         words_embeddings = self.word_embeddings(input_ids)
         position_embeddings = self.position_embeddings(position_ids)
         token_type_embeddings = self.token_type_embeddings(token_type_ids)
-        embeddings = words_embeddings + position_embeddings + token_type_embeddings + senti_word_embeddings + pos_tag_embeddings + polarity_embeddings
+        embeddings = words_embeddings + position_embeddings + token_type_embeddings + \
+                     senti_word_embeddings + pos_tag_embeddings + polarity_embeddings
         embeddings = self.LayerNorm(embeddings)
         embeddings = self.dropout(embeddings)
         return embeddings
@@ -426,7 +427,6 @@ class BertModel(BertPreTrainedModel):
 
 class BertClassificationHead(nn.Module):
     """Head for sentence-level classification tasks."""
-
     def __init__(self, config):
         super(BertClassificationHead, self).__init__()
         self.dense = nn.Linear(config.hidden_size, config.hidden_size)
@@ -449,9 +449,13 @@ class CENET(BertPreTrainedModel):
     def __init__(self,config, pos_tag_embedding=False, senti_embedding=False, polarity_embedding=False,args= None):
         super(CENET, self).__init__(config)
         self.num_labels = config.num_labels
-        self.bert = BertModel(config, pos_tag_embedding=pos_tag_embedding,
-                                      senti_embedding=senti_embedding,
-                                      polarity_embedding=polarity_embedding,args=args)
+        self.bert = BertModel(
+            config, 
+            pos_tag_embedding=pos_tag_embedding,
+            senti_embedding=senti_embedding,
+            polarity_embedding=polarity_embedding,
+            args=args
+        )
         self.classifier = BertClassificationHead(config)
         self.init_weights()
 
@@ -459,19 +463,20 @@ class CENET(BertPreTrainedModel):
         input_ids = text[:,0,:].long()
         attention_mask =text[:,1,:].long()
         token_type_ids = text[:,2,:].long()
-        outputs = self.bert(input_ids,
-                            visual=visual,
-                            acoustic=acoustic,
-                            visual_ids=visual_ids,
-                            acoustic_ids=acoustic_ids,
-                            pos_ids=pos_tag_ids,
-                            senti_word_ids=senti_word_ids,
-                            polarity_ids=polarity_ids,
-                            attention_mask=attention_mask,
-                            token_type_ids=token_type_ids,
-                            position_ids=position_ids, 
-                            head_mask=head_mask,
-                            )
+        outputs = self.bert(
+            input_ids,
+            visual=visual,
+            acoustic=acoustic,
+            visual_ids=visual_ids,
+            acoustic_ids=acoustic_ids,
+            pos_ids=pos_tag_ids,
+            senti_word_ids=senti_word_ids,
+            polarity_ids=polarity_ids,
+            attention_mask=attention_mask,
+            token_type_ids=token_type_ids,
+            position_ids=position_ids, 
+            head_mask=head_mask,
+        )
         sequence_output = outputs[0]
         logits = self.classifier(sequence_output)
         if labels is not None:

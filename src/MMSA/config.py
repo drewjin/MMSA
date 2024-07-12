@@ -35,8 +35,8 @@ def get_config_regression(
 
     enhance_net_args = {}
     if dataset_name not in ['sims', 'simsv2']:
-        dataset_args['need_data_enhancement'] = False
-    else:
+        model_common_args['need_data_enhancement'] = False
+    elif cmd_args.use_embedding != 1:
         en_net = cmd_args.enhance_net
         if isinstance(cmd_args.enhance_net, str):
             temp = []
@@ -66,6 +66,12 @@ def get_config_regression(
                 'hyper_params':enhance_net_args['v3']
             }}
 
+    va_embedding_args = {}
+    if cmd_args.use_embedding == 1:
+        model_common_args['need_data_enhancement'] = False
+        model_common_args['need_va_embeddings'] = True
+        va_embedding_args = config_all['VAEmbeddingsParams']
+
     config = {}
     config['model_name'] = model_name
     config['dataset_name'] = dataset_name
@@ -73,6 +79,7 @@ def get_config_regression(
     config.update(model_common_args)
     config.update(model_dataset_args)
     config.update(enhance_net_args)
+    config.update(va_embedding_args)
     config['featurePath'] = os.path.join(config_all['datasetCommonParams']['dataset_root_dir'], config['featurePath'])
     config = edict(config) # use edict for backward compatibility with MMSA v1.0
 
@@ -98,8 +105,11 @@ def get_config_regression(
                 config['weight_dir'] = os.path.join(pretrained_weight_root, 'bert', config['pretrained'])
             else:
                 config['weight_dir'] = os.path.join(pretrained_weight_root, config['pretrained'])
+        if model_name == 'bm_mag_m':
+            config['bert_path'] = os.path.join(pretrained_weight_root, 'bert/bert-base-uncased')
         weight_dir = config['weight_dir']
-        if ((no_transformers_key and use_bert) or (maybe_use_transformers is not None)):
+        if ((no_transformers_key and use_bert) or 
+            (maybe_use_transformers is not None and maybe_use_transformers == 'bert')):
             weight_dir = weight_dir.split('/')
             cn_bert = 'bert-base-chinese'
             en_bert = 'bert-base-uncased'

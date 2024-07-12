@@ -10,13 +10,16 @@ import argparse
 
 from MMSA.run import MMSA_run
 
+seeds = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
+
 def parse_args():
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('-m', '--model', type=str, default='tetfn', help='Name of model',
+    parser.add_argument('-m', '--model', type=str, default='bm_mag_m', help='Name of model',
                         choices=['lf_dnn', 'ef_lstm', 'tfn', 'mctn','lmf', 'mfn', 'graph_mfn', 'mult', 'bert_mag', 
-                                 'misa', 'mfm', 'mlf_dnn', 'mtfn', 'mlmf', 'self_mm', 'mmim','tfr_net','tetfn','cenet'])
-    parser.add_argument('-d', '--dataset', type=str, default='sims',
+                                 'misa', 'mfm', 'mlf_dnn', 'mtfn', 'mlmf', 'self_mm', 'mmim','tfr_net','tetfn','cenet',
+                                 'bm_mag_m'])
+    parser.add_argument('-d', '--dataset', type=str, default='mosi',
                         choices=['sims', 'mosi', 'mosei', 'simsv2'], help='Name of dataset')
     parser.add_argument('-c', '--config', type=str, default=None,
                         help='Path to config file. If not specified, default config file will be used.')
@@ -24,9 +27,9 @@ def parse_args():
                         help='Whether to tune hyper parameters. Default: False')
     parser.add_argument('-tt', '--tune-times', type=int, default=50,
                         help='Number of times to tune hyper parameters. Default: 50')
-    parser.add_argument('-s', '--seeds', action='append', type=int, default=[16],
+    parser.add_argument('-s', '--seeds', action='append', type=int, default=seeds,
                         help='Random seeds. Specify multiple times for multiple seeds. Default: [1111, 1112, 1113, 1114, 1115]')
-    parser.add_argument('-n', '--num-workers', type=int, default=8,
+    parser.add_argument('-n', '--num-workers', type=int, default=12,
                         help='Number of workers used to load data. Default: 4')
     parser.add_argument('-v', '--verbose', type=int, default=1,
                         help='Verbose level of stdout. 0 for error, 1 for info, 2 for debug. Default: 1')
@@ -45,7 +48,8 @@ def parse_args():
                         help='Path to custom audio feature file. Default: ""')
     parser.add_argument('-Fv', '--feature-V', type=str, default='',
                         help='Path to custom video feature file. Default: ""')
-    parser.add_argument('-E', '--enhance-net', type=str, default=[1, 3])
+    parser.add_argument('-E', '--enhance-net', type=str, default=[0, 1])
+    parser.add_argument('-embed', '--use-embedding', type=int, default=0)
     
     return parser.parse_args()
 

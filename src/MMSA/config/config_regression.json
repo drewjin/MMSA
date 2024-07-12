@@ -79,6 +79,14 @@
       }
     }
   },
+  "VAEmbeddingsParams":{
+    "va_embed_freq":48, 
+    "feature_wise_embed":12, 
+    "va_embed_res_dropout":0.1, 
+    "va_embed_activation_dropout":0.1,
+    "v_out_feature_dim":768,
+    "a_out_feature_dim":128
+  },
   "enhanceNetParams":{
     "enhancement_split": {
       "audio": [20, 1, 12],
@@ -1717,6 +1725,46 @@
         "max_grad_norm":2,
         "adam_epsilon":3e-8,
         "batch_size":64
+      }
+    }
+  },
+  "bm_mag_m": {
+    "commonParams": {
+      "need_data_aligned": true,
+      "need_model_aligned": true,
+      "use_bert": true,
+      "early_stop": 8,
+      "need_normalize": false,
+      "weight_decay": 0.0,
+      "use_accelerate": true
+    },
+    "datasetParams": {
+      "mosi": {
+        "batch_size": 64,
+        "learning_rate": 2e-5,
+        "beta_shift": 1,
+        "dropout_prob": 0.3,
+        "transformers": "mamba",
+        "pretrained": "mamba-180m-hf",
+        "mamba_embed_size": 1024
+      },
+      "mosei": {
+        "batch_size": 32,
+        "learning_rate": 1e-5,
+        "beta_shift": 1,
+        "dropout_prob": 0.2,
+        "transformers": "mamba",
+        "pretrained": "mamba-180m-hf",
+        "mamba_embed_size": 1024
+      },
+      "sims": {
+        "batch_size": 32,
+        "learning_rate": 5e-5,
+        "beta_shift": 1,
+        "dropout_prob": 0.1,
+        "transformers": "mamba",
+        "pretrained": "mamba-180m-hf",
+        "mamba_embed_size": 1024
       }
     }
   }

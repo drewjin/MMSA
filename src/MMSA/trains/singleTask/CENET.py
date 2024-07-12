@@ -23,7 +23,7 @@ class CENET():
         optimizer_grouped_parameters = [
             {
                 "params": [
-                    p for n, p in param_optimizer if not any(nd in n for nd in no_decay)  and not any(nd in n for nd in CE_params)
+                    p for n, p in param_optimizer if not any(nd in n for nd in no_decay) and not any(nd in n for nd in CE_params)
                 ],
                 "weight_decay": self.args.weight_decay,
             },
