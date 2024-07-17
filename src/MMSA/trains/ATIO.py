@@ -34,10 +34,11 @@ class ATIO():
             # missing-task
             'tfr_net': TFR_NET,
             # custom
-            'bm_mag_m': BM_MAG_M
+            'bm_mag_m': BM_MAG_M,
+            'mult_another': MULT_another,
         }
     
     def getTrain(self, args, trainer=None):
-        if args.use_accelerate:
-            return self.TRAIN_MAP[args['model_name']](args, trainer)
+        # if args.use_accelerate:
+        #     return self.TRAIN_MAP[args['model_name']](args, trainer)
         return self.TRAIN_MAP[args['model_name']](args)

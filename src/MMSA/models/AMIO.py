@@ -39,7 +39,8 @@ class AMIO(nn.Module):
             # missing-task
             'tfr_net': TFR_NET,
             # custom
-            'bm_mag_m': BM_MAG_M
+            'bm_mag_m': BM_MAG_M,
+            "mult_another": MULT_another
         }
         self.need_model_aligned = args.get('need_model_aligned', None)
         # simulating word-align network (for seq_len_T == seq_len_A == seq_len_V)

@@ -257,18 +257,7 @@ def _run(args, num_workers=4, is_tune=False, from_sena=False):
     #     model = torch.nn.DataParallel(model,
     #                                   device_ids=args.gpu_ids,
     #                                   output_device=args.gpu_ids[0])
-    if args.use_accelerate:
-        # model, optimizer, train_dataloader, lr_scheduler = accelerator.prepare(
-        #     model, optimizer, train_dataloader, lr_scheduler
-        # )
-        trainer_dict = {
-            'model': model,
-            'data_loader': dataloader
-        }
-        trainer = ATIO().getTrain(args, trainer=trainer_dict)
-        model, dataloader = trainer.get_model_dataloader()
-    else:
-        trainer = ATIO().getTrain(args)
+    trainer = ATIO().getTrain(args)
     # do train
     # epoch_results = trainer.do_train(model, dataloader)
     epoch_results = trainer.do_train(model, dataloader, return_epoch_results=from_sena)
