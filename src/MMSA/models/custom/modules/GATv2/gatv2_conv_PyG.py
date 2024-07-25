@@ -2,7 +2,7 @@ from typing import Union, Tuple, Optional
 from torch_geometric.typing import (Adj, Size, OptTensor, PairTensor)
 
 import torch
-from torch import Tensor
+from torch import NoneType, Tensor
 import torch.nn.functional as F
 from torch.nn import Parameter, Linear
 from torch_sparse import SparseTensor, set_diag
@@ -62,12 +62,14 @@ class GATv2Conv(MessagePassing):
     """
     _alpha: OptTensor
 
-    def __init__(self, in_channels: int,
-                 out_channels: int, heads: int = 1, concat: bool = True,
-                 negative_slope: float = 0.2, dropout: float = 0.,
-                 add_self_loops: bool = True, bias: bool = True,
-                 share_weights: bool = False,
-                 **kwargs):
+    def __init__(
+        self, in_channels: int,
+        out_channels: int, heads: int = 1, concat: bool = True,
+        negative_slope: float = 0.2, dropout: float = 0.,
+        add_self_loops: bool = True, bias: bool = True,
+        share_weights: bool = False,
+        **kwargs
+    ):
         super(GATv2Conv, self).__init__(node_dim=0, **kwargs)
 
         self.in_channels = in_channels
@@ -79,10 +81,12 @@ class GATv2Conv(MessagePassing):
         self.add_self_loops = add_self_loops
         self.share_weights = share_weights
 
+        # Left Vertex
         self.lin_l = Linear(in_channels, heads * out_channels, bias=bias)
         if share_weights:
             self.lin_r = self.lin_l
         else:
+        # Right Vertex
             self.lin_r = Linear(in_channels, heads * out_channels, bias=bias)
 
         self.att = Parameter(torch.Tensor(1, heads, out_channels))
@@ -104,8 +108,10 @@ class GATv2Conv(MessagePassing):
         glorot(self.att)
         zeros(self.bias)
 
-    def forward(self, x: Union[Tensor, PairTensor], edge_index: Adj,
-                size: Size = None, return_attention_weights: bool = None):
+    def forward(
+        self, x: Union[Tensor, PairTensor], edge_index: Adj,
+        size: Size = None, return_attention_weights: bool = None
+    ):
         # type: (Union[Tensor, PairTensor], Tensor, Size, NoneType) -> Tensor  # noqa
         # type: (Union[Tensor, PairTensor], SparseTensor, Size, NoneType) -> Tensor  # noqa
         # type: (Union[Tensor, PairTensor], Tensor, Size, bool) -> Tuple[Tensor, Tuple[Tensor, Tensor]]  # noqa
@@ -173,9 +179,11 @@ class GATv2Conv(MessagePassing):
         else:
             return out
 
-    def message(self, x_j: Tensor, x_i: Tensor,
-                index: Tensor, ptr: OptTensor,
-                size_i: Optional[int]) -> Tensor:
+    def message(
+        self, x_j: Tensor, x_i: Tensor,
+        index: Tensor, ptr: OptTensor,
+        size_i: Optional[int]
+    ) -> Tensor:
         x = x_i + x_j
         x = F.leaky_relu(x, self.negative_slope)
         alpha = (x * self.att).sum(dim=-1)
@@ -185,6 +193,23 @@ class GATv2Conv(MessagePassing):
         return x_j * alpha.unsqueeze(-1)
 
     def __repr__(self):
-        return '{}({}, {}, heads={})'.format(self.__class__.__name__,
-                                             self.in_channels,
-                                             self.out_channels, self.heads)
+        return '{}({}, {}, heads={})'.format(
+            self.__class__.__name__,
+            self.in_channels,
+            self.out_channels, 
+            self.heads
+        )
+
+
+if __name__ == '__main__':
+    gat = GATv2Conv(768, 768, heads=8, concat=True)
+    
+    batch_size = 32
+    t = torch.randn((batch_size, 50, 768))
+    a = torch.randn((batch_size, 46, 768))
+    v = torch.randn((batch_size, 15, 768))
+    
+    e_ta = torch.tensor([
+    ], dtype=torch.long)
+
+    gat(t, e_ta)

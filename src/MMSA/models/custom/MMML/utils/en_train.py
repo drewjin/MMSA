@@ -1,12 +1,12 @@
 import torch
 from torch import nn
 from tqdm import tqdm
-from utils.metricsTop import MetricsTop
-from utils.context_model import rob_d2v_cc_context
-from utils.en_model import rob_d2v_cc, rob_d2v_cme
+from .metricsTop import MetricsTop
+from .context_model import rob_d2v_cc_context
+from .en_model import rob_d2v_cc, rob_d2v_cme
 import random
 import numpy as np
-from utils.data_loader import data_loader
+from .data_loader import data_loader
 from itertools import chain
 
 # global variable

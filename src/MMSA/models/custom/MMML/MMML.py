@@ -63,9 +63,9 @@ class rob_d2v_cc(nn.Module):
         fused_output = self.fused_output_layers(fused_features)        # Shape is [batch_size, 1]
 
         return {
-                'T': T_output, 
-                'A': A_output, 
-                'M': fused_output
+            'T': T_output, 
+            'A': A_output, 
+            'M': fused_output
         }
 
 

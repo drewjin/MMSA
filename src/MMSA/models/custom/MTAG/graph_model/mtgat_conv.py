@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from torch.nn import Parameter
 from torch_sparse import SparseTensor
 # from torch_geometric.nn.conv import MessagePassing
-from graph_model.message_passing import MessagePassing
+from .message_passing import MessagePassing
 from torch_geometric.utils import softmax
 
 from torch_geometric.nn.inits import glorot, zeros

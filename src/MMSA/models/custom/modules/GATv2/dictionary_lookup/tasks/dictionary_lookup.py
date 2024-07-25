@@ -10,7 +10,7 @@ from torch.nn import functional as F
 from torch_geometric.data import Data
 from sklearn.model_selection import train_test_split
 
-import common
+# import common
 
 
 class DictionaryLookupDataset(object):

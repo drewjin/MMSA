@@ -1,8 +1,11 @@
-from argparse import ArgumentParser
-from attrdict import AttrDict
+import sys
+sys.path.append('/home/drew/Desktop/Research/MMSA/src/MMSA/models/custom/modules/GATv2/dictionary_lookup')
 
-from experiment import Experiment
-from common import Task, GNN_TYPE, STOP
+from argparse import ArgumentParser
+# from attrdict import AttrDict
+from easydict import EasyDict
+
+from utils import Experiment, Task, GNN_TYPE, STOP
 
 def get_fake_args(
         task=Task.DICTIONARY,
@@ -28,7 +31,7 @@ def get_fake_args(
         save=None,
         load=None,
 ):
-    return AttrDict({
+    return EasyDict({
         'task': task,
         'type': type,
         'dim': dim,

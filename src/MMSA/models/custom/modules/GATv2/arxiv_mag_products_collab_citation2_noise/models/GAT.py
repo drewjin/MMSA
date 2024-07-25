@@ -3,15 +3,28 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch_geometric.nn import GATConv
-from models.dp_gat import DotProductGATConv
-from models.gat2 import GAT2Conv
+from .dp_gat import DotProductGATConv
+from .gat2 import GAT2Conv
 # from models.dp_gat_new import DotProductGATConv
 from tqdm import tqdm
 
 
 class GAT(torch.nn.Module):
-    def __init__(self, base_layer, in_channels, hidden_channels, out_channels, num_layers, num_heads,
-                 dropout, device, saint, use_layer_norm, use_residual, use_resdiual_linear):
+    def __init__(
+        self, 
+        base_layer, 
+        in_channels, 
+        hidden_channels, 
+        out_channels, 
+        num_layers, 
+        num_heads,
+        dropout, 
+        device, 
+        saint, 
+        use_layer_norm, 
+        use_residual, 
+        use_resdiual_linear
+    ):
         super(GAT, self).__init__()
 
         self.layers = torch.nn.ModuleList()
@@ -199,7 +212,12 @@ class GAT_TYPE(Enum):
             return "GAT2"
         return "NA"
 
-    def get_model(self, in_channels, hidden_channels, out_channels, num_layers, num_heads, dropout, device, saint, use_layer_norm, use_residual, use_resdiual_linear):
+    def get_model(
+        self, in_channels, hidden_channels, 
+        out_channels, num_layers, num_heads, 
+        dropout, device, saint, use_layer_norm, 
+        use_residual, use_resdiual_linear
+    ):
         if self is GAT_TYPE.GAT:
             return GAT(GATConv, in_channels, hidden_channels, out_channels, num_layers, num_heads, dropout, device, saint, use_layer_norm, use_residual, use_resdiual_linear)
         elif self is GAT_TYPE.DPGAT:

@@ -36,6 +36,9 @@ class ATIO():
             # custom
             'bm_mag_m': BM_MAG_M,
             'mult_another': MULT_another,
+            'mmml': MMML,
+            'gsgnet': GSGNET,
+            'cmgformer': CMGFormer
         }
     
     def getTrain(self, args, trainer=None):

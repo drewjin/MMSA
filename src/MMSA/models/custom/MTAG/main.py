@@ -157,20 +157,22 @@ def summary_to_dict():
     return results
 
 
-def train_model(optimizer,
-                use_gnn=True,
-                exclude_vision=False,
-                exclude_audio=False,
-                exclude_text=False,
-                average_mha=False,
-                num_gat_layers=1,
-                lr_scheduler=None,
-                reduce_on_plateau_lr_scheduler_patience=None,
-                reduce_on_plateau_lr_scheduler_threshold=None,
-                multi_step_lr_scheduler_milestones=None,
-                exponential_lr_scheduler_gamma=None,
-                use_pe=False,
-                use_prune=False):
+def train_model(
+    optimizer,
+    use_gnn=True,
+    exclude_vision=False,
+    exclude_audio=False,
+    exclude_text=False,
+    average_mha=False,
+    num_gat_layers=1,
+    lr_scheduler=None,
+    reduce_on_plateau_lr_scheduler_patience=None,
+    reduce_on_plateau_lr_scheduler_threshold=None,
+    multi_step_lr_scheduler_milestones=None,
+    exponential_lr_scheduler_gamma=None,
+    use_pe=False,
+    use_prune=False
+):
     assert lr_scheduler in ['reduce_on_plateau', 'exponential', 'multi_step',
                             None], 'LR scheduler can only be [reduce_on_plateau, exponential, multi_step]!'
 
@@ -243,7 +245,9 @@ def train_model(optimizer,
         if not average_mha:
             raise NotImplementedError('Currently only average_mha=1 is supported.')
         else:
-            net = NetMTGATAverageUnalignedConcatMHA(num_gat_layers=num_gat_layers, use_prune=use_prune, use_pe=use_pe)
+            net = NetMTGATAverageUnalignedConcatMHA(
+                num_gat_layers=num_gat_layers, use_prune=use_prune, use_pe=use_pe
+            )
     else:
         raise NotImplementedError
     net.to(device)
@@ -292,12 +296,11 @@ def train_model(optimizer,
             if covarep.size()[0] == 1:
                 continue
             try:
-                actual_batch_size, input_kwargs, labels = prepare_data_one_batch(covarep,
-                                                                                 exclude_audio,
-                                                                                 exclude_text,
-                                                                                 exclude_vision,
-                                                                                 facet, inputLen,
-                                                                                 labels, words, device)
+                actual_batch_size, input_kwargs, labels = prepare_data_one_batch(
+                    covarep, exclude_audio, exclude_text,
+                    exclude_vision, facet, inputLen,
+                    labels, words, device
+                )
             except ValueError:
                 continue
             try:
@@ -469,7 +472,6 @@ def train_model(optimizer,
                     gc.best.best_val_epoch_lr = current_lr
                     best_model = True
 
-
                 if valid_cor > gc.best.max_valid_cor:
                     gc.best.max_valid_cor = valid_cor
                 if valid_acc > gc.best.max_valid_acc:
@@ -521,10 +523,12 @@ def train_model(optimizer,
     return summary_to_dict()
 
 
-def declare_loss_and_optimizers(device, exponential_lr_scheduler_gamma, lr_scheduler,
-                                multi_step_lr_scheduler_milestones, net, optimizer,
-                                reduce_on_plateau_lr_scheduler_patience, reduce_on_plateau_lr_scheduler_threshold,
-                                use_gnn):
+def declare_loss_and_optimizers(
+    device, exponential_lr_scheduler_gamma, lr_scheduler,
+    multi_step_lr_scheduler_milestones, net, optimizer,
+    reduce_on_plateau_lr_scheduler_patience, reduce_on_plateau_lr_scheduler_threshold,
+    use_gnn
+):
     if gc.config['loss_type'] == 'mse':
         criterion = nn.MSELoss()
     elif gc.config['loss_type'] == 'l1':
@@ -629,7 +633,12 @@ def declare_loss_and_optimizers(device, exponential_lr_scheduler_gamma, lr_sched
     return actual_lr_scheduler, criterion, optimizer
 
 
-def prepare_data_one_batch(covarep, exclude_audio, exclude_text, exclude_vision, facet, inputLen, labels, words, device):
+def prepare_data_one_batch(
+    covarep, exclude_audio, 
+    exclude_text, exclude_vision, 
+    facet, inputLen, 
+    labels, words, device
+):
     words, covarep, facet, inputLen, labels = words.to(device), covarep.to(device), facet.to(
         device), inputLen.to(device), labels.to(device)
     input_kwargs = {}
@@ -814,8 +823,8 @@ def get_arguments():
     parser.register_parameter("--zero_out_audio", int, 0, "whether to zero out audio modality")
 
     # Other settings, these are likely to be fixed all the time
-    parser.register_parameter("--task", str, 'mosei', "task you are doing. Choose from mosi or mosei")
-    parser.register_parameter("--dataroot", str, '/home/username/MTGAT/dataset/cmu_mosei', "path to the dataset")
+    parser.register_parameter("--task", str, 'mosi', "task you are doing. Choose from mosi or mosei")
+    parser.register_parameter("--dataroot", str, '/home/drew/Desktop/Research/MMSA/datasets/CMU-MOSI/Processed/unaligned_50.pkl', "path to the dataset")
     parser.register_parameter("--log_dir", str, None, 'log path for models')
     parser.register_parameter("--eval", bool, False, "whether this is a evaluation run")
     parser.register_parameter("--resume_pt", str, None, "the model pt to resume from")
@@ -1030,17 +1039,19 @@ if __name__ == "__main__":
         logging.info('Start time: ' + time.strftime("%H:%M:%S", time.gmtime(start_time)))
         # torch.manual_seed(gc.config['seed'])
         util.set_seed(gc.config['seed'])
-        best_results = train_model(args.optimizer,
-                                   use_gnn=args.useGNN,
-                                   average_mha=args.average_mha,
-                                   num_gat_layers=args.num_gat_layers,
-                                   lr_scheduler=args.lr_scheduler,
-                                   reduce_on_plateau_lr_scheduler_patience=args.reduce_on_plateau_lr_scheduler_patience,
-                                   reduce_on_plateau_lr_scheduler_threshold=args.reduce_on_plateau_lr_scheduler_threshold,
-                                   multi_step_lr_scheduler_milestones=args.multi_step_lr_scheduler_milestones,
-                                   exponential_lr_scheduler_gamma=args.exponential_lr_scheduler_gamma,
-                                   use_pe=args.use_pe,
-                                   use_prune=args.use_prune)
+        best_results = train_model(
+            args.optimizer,
+            use_gnn=args.useGNN,
+            average_mha=args.average_mha,
+            num_gat_layers=args.num_gat_layers,
+            lr_scheduler=args.lr_scheduler,
+            reduce_on_plateau_lr_scheduler_patience=args.reduce_on_plateau_lr_scheduler_patience,
+            reduce_on_plateau_lr_scheduler_threshold=args.reduce_on_plateau_lr_scheduler_threshold,
+            multi_step_lr_scheduler_milestones=args.multi_step_lr_scheduler_milestones,
+            exponential_lr_scheduler_gamma=args.exponential_lr_scheduler_gamma,
+            use_pe=args.use_pe,
+            use_prune=args.use_prune
+        )
         elapsed_time = time.time() - start_time
         logging.info('Total time: ' + time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
         # log the results to grid search paths

@@ -40,7 +40,10 @@ class AMIO(nn.Module):
             'tfr_net': TFR_NET,
             # custom
             'bm_mag_m': BM_MAG_M,
-            "mult_another": MULT_another
+            'mult_another': MULT_another,
+            'mmml': MMML,
+            'gsgnet': GSGNET,
+            'cmgformer': CMGFormer
         }
         self.need_model_aligned = args.get('need_model_aligned', None)
         # simulating word-align network (for seq_len_T == seq_len_A == seq_len_V)

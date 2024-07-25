@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
 
-from graph_model.dynamic_gnn_with_mtgat_prune import DynamicMTGATPruneModel
-from consts import GlobalConsts as gc
+from .graph_model.dynamic_gnn_with_mtgat_prune import DynamicMTGATPruneModel
+# from consts import GlobalConsts as gc
 
 class NetMTGATAverageUnalignedConcatMHA(nn.Module):
-    def __init__(self, num_gat_layers, use_transformer=False, use_prune=False, use_pe=False):
+    def __init__(self,num_gat_layers, use_transformer=False, use_prune=False, use_pe=False, config=None):
         super(NetMTGATAverageUnalignedConcatMHA, self).__init__()
         if use_transformer:
             raise NotImplementedError
@@ -14,25 +14,24 @@ class NetMTGATAverageUnalignedConcatMHA(nn.Module):
             # else:
             #     self.dgnn = DynamicGNNModelWithTransformerPaddingPrune(gc.config, concat=True,
             #                                                            num_gat_layers=num_gat_layers)
-
         else:
             if not use_prune:
                 raise NotImplementedError('Only pruned version is implemented now.')
             else:
-                self.dgnn = DynamicMTGATPruneModel(gc.config, concat=True, num_gat_layers=num_gat_layers, use_pe=use_pe)
+                self.dgnn = DynamicMTGATPruneModel(config, concat=True, num_gat_layers=num_gat_layers, use_pe=use_pe)
         
         label_dim = 1
-        if gc.dataset == "mosei":
-            label_dim = 7
-        elif gc.dataset in ['iemocap', 'iemocap_unaligned']:
-            label_dim = 8 # 2 x 4category
+        # if gc.dataset == "mosei":
+        #     label_dim = 7
+        # elif gc.dataset in ['iemocap', 'iemocap_unaligned']:
+        #     label_dim = 8 # 2 x 4category
         self.finalW = nn.Sequential(
-            nn.Linear(gc.config['graph_conv_out_dim'], gc.config['graph_conv_out_dim'] // 4),
+            nn.Linear(config['graph_conv_out_dim'], config['graph_conv_out_dim'] // 4),
             nn.ReLU(),
             # nn.Linear(gc.config['graph_conv_out_dim'] // 4, label_dim),
-            nn.Linear(gc.config['graph_conv_out_dim'] // 4, gc.config['graph_conv_out_dim'] // 4),
+            nn.Linear(config['graph_conv_out_dim'] // 4, config['graph_conv_out_dim'] // 4),
             nn.ReLU(),
-            nn.Linear(gc.config['graph_conv_out_dim'] // 4, label_dim),
+            nn.Linear(config['graph_conv_out_dim'] // 4, label_dim),
         )
 
     def forward(self, **kwargs):

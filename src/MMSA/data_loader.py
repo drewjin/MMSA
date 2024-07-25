@@ -89,6 +89,8 @@ class MMDataset(Dataset):
         if self.args.get("use_custom_data"):
             self.video_raw_rgb = data[self.mode]['video_rgb']
             self.audio_raw_wav = data[self.mode]['audio_wav']
+            self.video_rgb_lens = np.array(data[self.mode]['video_rgb_lens'], dtype=np.uint8).reshape(-1, 1)
+            self.audio_wav_lens = np.array(data[self.mode]['audio_wav_lens'], dtype=np.uint8).reshape(-1, 1)
 
         if self.args.get('data_missing'):
             # Currently only support unaligned data missing.
@@ -214,6 +216,8 @@ class MMDataset(Dataset):
         if self.args['use_custom_data']:
             sample['video_rgb'] = torch.Tensor(self.video_raw_rgb[index])
             sample['audio_wav'] = torch.Tensor(self.audio_raw_wav[index])
+            sample['video_rgb_lens'] = torch.Tensor(self.video_rgb_lens[index])
+            sample['audio_wav_lens'] = torch.Tensor(self.audio_wav_lens[index])
         if self.args.get('data_missing'):
             sample['text_m'] = torch.Tensor(self.text_m[index])
             sample['text_missing_mask'] = torch.Tensor(self.text_missing_mask[index])

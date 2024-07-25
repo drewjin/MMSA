@@ -12,11 +12,11 @@ import traceback
 import torch_geometric as pyg
 
 ## graph building model_utils
-from graph_model.graph_builder import construct_time_aware_dynamic_graph
-from graph_model.mtgat_conv import MTGATConv
-from graph_model.model_utils import device
-from graph_model.pooling import TopKEdgePooling, TopKPooling, RandomEdgePooling
-from graph_model.transformer import PositionalEncoding
+from .graph_builder import construct_time_aware_dynamic_graph
+from .mtgat_conv import MTGATConv
+from .model_utils import device
+from .pooling import TopKEdgePooling, TopKPooling, RandomEdgePooling
+from .transformer import PositionalEncoding
 
 
 class DynamicMTGATPruneModel(nn.Module):

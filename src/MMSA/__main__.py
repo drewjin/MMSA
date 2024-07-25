@@ -10,16 +10,18 @@ import argparse
 
 from MMSA.run import MMSA_run
 
-seeds = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
+seeds = [128
+        #  , 12, 712, 827, 1347, 99, 8, 24
+]
 
-def parse_args():
+def parse_args():    
     parser = argparse.ArgumentParser()
     
-    parser.add_argument('-m', '--model', type=str, default='mult_another', help='Name of model',
+    parser.add_argument('-m', '--model', type=str, default='cmgformer', help='Name of model',
                         choices=['lf_dnn', 'ef_lstm', 'tfn', 'mctn','lmf', 'mfn', 'graph_mfn', 'mult', 'bert_mag', 
                                  'misa', 'mfm', 'mlf_dnn', 'mtfn', 'mlmf', 'self_mm', 'mmim','tfr_net','tetfn','cenet',
-                                 'bm_mag_m', 'mult_another'])
-    parser.add_argument('-d', '--dataset', type=str, default='mosi',
+                                 'bm_mag_m', 'mult_another', 'mmml', 'gsgnet', 'cmgformer'])
+    parser.add_argument('-d', '--dataset', type=str, default='mosei',
                         choices=['sims', 'mosi', 'mosei', 'simsv2'], help='Name of dataset')
     parser.add_argument('-c', '--config', type=str, default=None,
                         help='Path to config file. If not specified, default config file will be used.')
@@ -27,9 +29,12 @@ def parse_args():
                         help='Whether to tune hyper parameters. Default: False')
     parser.add_argument('-tt', '--tune-times', type=int, default=50,
                         help='Number of times to tune hyper parameters. Default: 50')
-    parser.add_argument('-s', '--seeds', action='append', type=int, default=[1347],
+    # seeds = [129]
+    # if parser.parse_args().model == 'cmgformer':
+    #     seeds = [128]
+    parser.add_argument('-s', '--seeds', action='append', type=int, default=seeds,
                         help='Random seeds. Specify multiple times for multiple seeds. Default: [1111, 1112, 1113, 1114, 1115]')
-    parser.add_argument('-n', '--num-workers', type=int, default=12,
+    parser.add_argument('-n', '--num-workers', type=int, default=20,
                         help='Number of workers used to load data. Default: 4')
     parser.add_argument('-v', '--verbose', type=int, default=1,
                         help='Verbose level of stdout. 0 for error, 1 for info, 2 for debug. Default: 1')

@@ -54,7 +54,7 @@ class MMML():
                 for m in self.tasks:
                     sub_loss = self.args.loss_weights[m] * self.criterion(outputs[m], targets)
                     loss += sub_loss
-    #                 train_loss[m] += sub_loss.item()*text_inputs.size(0)
+                    # train_loss[m] += sub_loss.item()*text_inputs.size(0)
                 total_loss += loss.item()*text_inputs.size(0)  
             else:
                 loss = self.criterion(outputs['M'], targets)        
@@ -64,7 +64,7 @@ class MMML():
             optimizer.step()                
                 
         total_loss = round(total_loss / len(data_loader.dataset), 4)
-#         print('TRAIN'+" >> loss: ",total_loss)
+        # print('TRAIN'+" >> loss: ",total_loss)
         return total_loss
 
     def do_test(self, model, data_loader, mode):

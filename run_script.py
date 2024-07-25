@@ -6,15 +6,21 @@ model_list = [
     # 'lf_dnn', 
     # 'ef_lstm', 
     # 'tfn', 'mctn', 'lmf', 
-    'bm_mag_m',
-    'mfn', 'graph_mfn', 
-    'mult', 'bert_mag',
-    'misa', 'mfm', 
+    # 'bm_mag_m',
+    # 'mfn', 
+    # 'graph_mfn', 
+    'cmgformer',
+    'mult', 
+    'bert_mag',
+    'misa', 
+    # 'mfm', 
     # 'mlf_dnn', 
     # 'mtfn', 'mlmf', 
     'self_mm', 
-    # 'mmim', 'tfr_net', 
-    'tetfn', 'cenet'
+    'mmim',
+    'tfr_net', 
+    'tetfn', 
+    'cenet'
 ]
 
 # 定义增强配置列表，直接使用Python列表
@@ -24,7 +30,7 @@ def run_experiment(model):
     cmd = [
         'python', '/home/drew/Desktop/Research/MMSA/src/MMSA/__main__.py',
         '-m', model,
-        '-d', 'mosi'
+        '-d', 'mosei'
     ]
 
     # 打印将要执行的命令

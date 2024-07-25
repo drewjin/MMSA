@@ -78,18 +78,18 @@ class rob_d2v_cme(nn.Module):
         super().__init__()
         self.version = config.cme_version
 
-        self.roberta_model = RobertaModel.from_pretrained('roberta-base')
+        self.roberta_model = RobertaModel.from_pretrained(config.roberta)
 
-        self.data2vec_model = Data2VecAudioModel.from_pretrained("facebook/data2vec-audio-base")
+        self.data2vec_model = Data2VecAudioModel.from_pretrained(config.data2vec)
         
         self.T_output_layers = nn.Sequential(
             nn.Dropout(config.dropout),
             nn.Linear(768, 1)
-           )           
+        )           
         self.A_output_layers = nn.Sequential(
             nn.Dropout(config.dropout),
             nn.Linear(768, 1)
-          )
+        )
         
         # cls embedding layers
         self.text_cls_emb = nn.Embedding(num_embeddings=1, embedding_dim=768)

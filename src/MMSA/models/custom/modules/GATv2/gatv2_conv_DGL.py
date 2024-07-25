@@ -9,7 +9,6 @@ from dgl.base import DGLError
 from dgl.nn.pytorch.utils import Identity
 from dgl.utils import expand_as_pair
 
-
 class GATv2Conv(nn.Module):
     r"""
     Description
