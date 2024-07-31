@@ -1,6 +1,7 @@
 """
 ATIO -- All Trains in One
 """
+from .custom import *
 from .multiTask import *
 from .singleTask import *
 from .missingTask import *
@@ -32,7 +33,15 @@ class ATIO():
             'tetfn': TETFN,
             # missing-task
             'tfr_net': TFR_NET,
+            # custom
+            'bm_mag_m': BM_MAG_M,
+            'mult_another': MULT_another,
+            'mmml': MMML,
+            'gsgnet': GSGNET,
+            'cmgformer': CMGFormer
         }
     
-    def getTrain(self, args):
+    def getTrain(self, args, trainer=None):
+        # if args.use_accelerate:
+        #     return self.TRAIN_MAP[args['model_name']](args, trainer)
         return self.TRAIN_MAP[args['model_name']](args)

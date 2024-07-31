@@ -30,13 +30,15 @@ def get_config_regression(
     # use aligned feature if the model requires it, otherwise use unaligned feature
     if model_common_args['need_data_aligned'] and 'aligned' in dataset_args:
         dataset_args = dataset_args['aligned']
+    elif not model_common_args['need_data_aligned'] and model_common_args['use_custom_data']:
+        dataset_args = dataset_args['custom_unaligned']
     else:
         dataset_args = dataset_args['unaligned']
 
     enhance_net_args = {}
     if dataset_name not in ['sims', 'simsv2']:
-        dataset_args['need_data_enhancement'] = False
-    else:
+        model_common_args['need_data_enhancement'] = False
+    elif cmd_args.use_embedding != 1:
         en_net = cmd_args.enhance_net
         if isinstance(cmd_args.enhance_net, str):
             temp = []
@@ -66,6 +68,12 @@ def get_config_regression(
                 'hyper_params':enhance_net_args['v3']
             }}
 
+    va_embedding_args = {}
+    if cmd_args.use_embedding == 1:
+        model_common_args['need_data_enhancement'] = False
+        model_common_args['need_va_embeddings'] = True
+        va_embedding_args = config_all['VAEmbeddingsParams']
+
     config = {}
     config['model_name'] = model_name
     config['dataset_name'] = dataset_name
@@ -73,24 +81,37 @@ def get_config_regression(
     config.update(model_common_args)
     config.update(model_dataset_args)
     config.update(enhance_net_args)
+    config.update(va_embedding_args)
     config['featurePath'] = os.path.join(config_all['datasetCommonParams']['dataset_root_dir'], config['featurePath'])
     config = edict(config) # use edict for backward compatibility with MMSA v1.0
 
     maybe_use_transformers = config.get('transformers', None)
+    
     if maybe_use_transformers is None:
         no_transformers_key = True
-        maybe_use_transformers = config.get('use_bert', None)
+        use_bert = config.get('use_bert', None)
         if maybe_use_transformers:
             config['transformers'] = 'bert'
-    if maybe_use_transformers is not None:
+    else:
+        no_transformers_key = False
+    if (maybe_use_transformers is not None or  
+       (maybe_use_transformers is None and no_transformers_key and use_bert)):
         pretrained_weight_root = config_all['pretrainedWeights']['weights_root_dir']
-        if config['transformers'] not in [None, [], '']:
-            config['weight_dir'] = os.path.join(pretrained_weight_root, config['transformers'], config['pretrained'])
+        if not no_transformers_key:
+            if config['transformers'] not in [[], '']:
+                config['weight_dir'] = os.path.join(pretrained_weight_root, config['transformers'], config['pretrained'])
+            else:
+                config['weight_dir'] = os.path.join(pretrained_weight_root, config['pretrained'])
         else:
-            config['weight_dir'] = os.path.join(pretrained_weight_root, config['pretrained'])
-
+            if use_bert:
+                config['weight_dir'] = os.path.join(pretrained_weight_root, 'bert', config['pretrained'])
+            else:
+                config['weight_dir'] = os.path.join(pretrained_weight_root, config['pretrained'])
+        if model_name == 'bm_mag_m':
+            config['bert_path'] = os.path.join(pretrained_weight_root, 'bert/bert-base-uncased')
         weight_dir = config['weight_dir']
-        if config['transformers'] == 'bert':
+        if ((no_transformers_key and use_bert) or 
+            (maybe_use_transformers is not None and maybe_use_transformers == 'bert')):
             weight_dir = weight_dir.split('/')
             cn_bert = 'bert-base-chinese'
             en_bert = 'bert-base-uncased'

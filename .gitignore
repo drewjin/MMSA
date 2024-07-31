@@ -17,3 +17,8 @@ saved_models
 __MACOSX__
 *.zip
 src/MMSA/config/config_regression.json
+paper/
+other/
+dataset
+data
+*.csv

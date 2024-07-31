@@ -120,14 +120,14 @@ class MFM():
             }
         with torch.no_grad():
             with tqdm(dataloader) as td:
-                for batch_data in td:
+                for idx, batch_data in enumerate(td):
                     vision = batch_data['vision'].to(self.args.device)
                     audio = batch_data['audio'].to(self.args.device)
                     text = batch_data['text'].to(self.args.device)
                     labels = batch_data['labels']['M'].to(self.args.device)
                     labels = labels.view(-1, 1)
 
-                    pred,gen_loss,mmd_loss,missing_loss = model(text, audio, vision)
+                    pred,gen_loss,mmd_loss,missing_loss = model(text, audio, vision, mode=[mode, idx+1])
                     pred = pred.squeeze(1)
 
                     if return_sample_results:

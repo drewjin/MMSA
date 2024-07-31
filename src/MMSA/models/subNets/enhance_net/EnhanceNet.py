@@ -127,8 +127,6 @@ class EnhanceNet_v3(nn.Module):
         O_v, O_a = self.lffn2(H_v + res_X_v, H_a + res_X_a)
         return O_v, O_a
 
-                
-
 if __name__ == '__main__':
     import os 
     import json

@@ -86,6 +86,12 @@ class MMDataset(Dataset):
                 self.vision_lengths = data[self.mode]['vision_lengths']
         self.audio[self.audio == -np.inf] = 0
 
+        if self.args.get("use_custom_data"):
+            self.video_raw_rgb = data[self.mode]['video_rgb']
+            self.audio_raw_wav = data[self.mode]['audio_wav']
+            self.video_rgb_lens = np.array(data[self.mode]['video_rgb_lens'], dtype=np.uint8).reshape(-1, 1)
+            self.audio_wav_lens = np.array(data[self.mode]['audio_wav_lens'], dtype=np.uint8).reshape(-1, 1)
+
         if self.args.get('data_missing'):
             # Currently only support unaligned data missing.
             self.text_m, self.text_length, self.text_mask, self.text_missing_mask = self.generate_m(self.text[:,0,:], self.text[:,1,:], None,
@@ -207,6 +213,11 @@ class MMDataset(Dataset):
         if not self.args['need_data_aligned']:
             sample['audio_lengths'] = self.audio_lengths[index]
             sample['vision_lengths'] = self.vision_lengths[index]
+        if self.args['use_custom_data']:
+            sample['video_rgb'] = torch.Tensor(self.video_raw_rgb[index])
+            sample['audio_wav'] = torch.Tensor(self.audio_raw_wav[index])
+            sample['video_rgb_lens'] = torch.Tensor(self.video_rgb_lens[index])
+            sample['audio_wav_lens'] = torch.Tensor(self.audio_wav_lens[index])
         if self.args.get('data_missing'):
             sample['text_m'] = torch.Tensor(self.text_m[index])
             sample['text_missing_mask'] = torch.Tensor(self.text_missing_mask[index])

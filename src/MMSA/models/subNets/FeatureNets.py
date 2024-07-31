@@ -74,3 +74,4 @@ class TextSubNet(nn.Module):
         h = self.dropout(final_states[0].squeeze(0))
         y_1 = self.linear_1(h)
         return y_1
+

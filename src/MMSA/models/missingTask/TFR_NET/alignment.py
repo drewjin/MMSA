@@ -76,11 +76,11 @@ class CM_ATTN(nn.Module):
         elif self_type == 'v_mem':
             embed_dim, attn_dropout, num_heads, position_embedding = self.d_v, self.attn_dropout, self.num_heads, True
         elif self_type == 'l_final':
-            embed_dim, attn_dropout, num_heads, position_embedding = self.seq_lens[0], self.attn_dropout, self.args["num_temporal_head"], False
+            embed_dim, attn_dropout, num_heads, position_embedding = self.seq_lens[0], self.attn_dropout, self.args["num_temporal_head"][0], False
         elif self_type == 'a_final':
-            embed_dim, attn_dropout, num_heads, position_embedding = self.seq_lens[1], self.attn_dropout, self.args["num_temporal_head"], False
+            embed_dim, attn_dropout, num_heads, position_embedding = self.seq_lens[1], self.attn_dropout, self.args["num_temporal_head"][1], False
         elif self_type == 'v_final':
-            embed_dim, attn_dropout, num_heads, position_embedding = self.seq_lens[2], self.attn_dropout, self.args["num_temporal_head"], False
+            embed_dim, attn_dropout, num_heads, position_embedding = self.seq_lens[2], self.attn_dropout, self.args["num_temporal_head"][2], False
         else:
             raise ValueError("Unknown network type")
         
@@ -124,7 +124,10 @@ class CM_ATTN(nn.Module):
         h_v_with_as = self.trans_v_with_a(proj_x_v, proj_x_a, proj_x_a)
         h_vs = torch.cat([h_v, h_v_with_ls, h_v_with_as], dim=2)
         h_vs_n = self.trans_v_final(h_vs.permute(1,2,0)).permute(0,2,1)
-        return h_ls.transpose(0, 1), h_as.transpose(0, 1), h_vs.transpose(0, 1), h_ls_n, h_as_n, h_vs_n,
+        return (
+            h_ls.transpose(0, 1), h_as.transpose(0, 1), h_vs.transpose(0, 1), 
+            h_ls_n, h_as_n, h_vs_n,
+        )
 
 MODULE_MAP = {
     'crossmodal_attn': CM_ATTN, 

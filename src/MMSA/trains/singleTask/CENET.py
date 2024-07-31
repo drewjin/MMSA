@@ -12,7 +12,7 @@ class CENET():
         self.args = args
         self.args.max_grad_norm = 2
         self.metrics = MetricsTop(args.train_mode).getMetics(args.dataset_name)
-        self.tokenizer = BertTokenizer.from_pretrained(args.pretrained)
+        self.tokenizer = BertTokenizer.from_pretrained(args.weight_dir)
         self.criterion = nn.L1Loss()
     def do_train(self, model, dataloader,return_epoch_results=False):
         param_optimizer = list(model.named_parameters())
@@ -23,7 +23,7 @@ class CENET():
         optimizer_grouped_parameters = [
             {
                 "params": [
-                    p for n, p in param_optimizer if not any(nd in n for nd in no_decay)  and not any(nd in n for nd in CE_params)
+                    p for n, p in param_optimizer if not any(nd in n for nd in no_decay) and not any(nd in n for nd in CE_params)
                 ],
                 "weight_decay": self.args.weight_decay,
             },

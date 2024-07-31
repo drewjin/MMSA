@@ -87,7 +87,7 @@ def MMSA_run(
         tune_times: Sets of hyper parameters to tune. Default: 50
         custom_feature: Path to custom feature file. The custom feature should
             contain features of all three modalities. If only one modality has
-            customized features, use `feature_*` below. 
+        ding    customized features, use `feature_*` below. 
         feature_T: Path to text feature file. Provide an empty string to use
             default BERT features. Default: ""
         feature_A: Path to audio feature file. Provide an empty string to use

@@ -93,8 +93,8 @@ class SELF_MM():
         logger.info("Init labels...")
         with tqdm(dataloader['train']) as td:
             for batch_data in td:
-                labels_m = batch_data['labels']['M'].view(-1).to(self.args.device)
                 indexes = batch_data['index'].view(-1)
+                labels_m = batch_data['labels']['M'].view(-1).to(self.args.device)
                 self.init_labels(indexes, labels_m)
 
         # initilize results
